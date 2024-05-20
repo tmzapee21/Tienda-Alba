@@ -1,5 +1,6 @@
 # Tienda-Alba
-Tienda del Colo Colo es Chile y las madres puros giles
+
+Tienda del Colo Colo es Chile.
 
 
 # Proyecto Compra Mbappe en Camino
