@@ -2,7 +2,8 @@
             Loader (Carga)
    =============================== */
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -18,7 +19,8 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white; /* Puedes ajustar el color de fondo según tu diseño */
+  background-color: white;
+  /* Puedes ajustar el color de fondo según tu diseño */
   z-index: 9999;
 }
 
@@ -48,10 +50,11 @@ body, html {
 
 @keyframes color {
   from {
-      background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
   }
+
   to {
-      background-color: rgba(0, 0, 0, 1);
+    background-color: rgba(0, 0, 0, 1);
   }
 }
 
@@ -60,7 +63,8 @@ body, html {
    =============================== */
 
 .base {
-  display: none; /* Hidden initially */
+  display: none;
+  /* Hidden initially */
   height: 100%;
   width: 100%;
   padding: 20px;
@@ -71,26 +75,22 @@ body, html {
   text-align: center;
 
 
-  --s: 200px; /* control the size */
+  --s: 200px;
+  /* control the size */
   --c1: #1d1d1d;
   --c2: #4e4f51;
   --c3: #3c3c3c;
-  background: repeating-conic-gradient(
-        from 30deg,
-        #0000 0 120deg,
-        var(--c3) 0 180deg
-      )
-      calc(0.5 * var(--s)) calc(0.5 * var(--s) * 0.577),
-    repeating-conic-gradient(
-      from 30deg,
+  background: repeating-conic-gradient(from 30deg,
+      #0000 0 120deg,
+      var(--c3) 0 180deg) calc(0.5 * var(--s)) calc(0.5 * var(--s) * 0.577),
+    repeating-conic-gradient(from 30deg,
       var(--c1) 0 60deg,
       var(--c2) 0 120deg,
-      var(--c3) 0 180deg
-    );
+      var(--c3) 0 180deg);
   background-size: var(--s) calc(var(--s) * 0.577);
 }
 
-.base h1{
+.base h1 {
   margin-top: 25%;
   color: white;
 }
@@ -102,11 +102,71 @@ body, html {
    =============================== */
 
 
+   .navbar {
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo negro con opacidad */
+}
 
-  
-  
-  
+.navbar-brand, .nav-link {
+    color: white !important; /* Texto blanco */
+}
+
+.nav-link:hover, .navbar-brand:hover {
+    color: #ffcc00 !important; /* Texto dorado al pasar el ratón */
+}
+
+.navbar-nav .nav-item .nav-link.active {
+    background-color: #444; /* Color de fondo gris para el enlace activo */
+    border-radius: 5px;
+}
+
+.dropdown-menu {
+    background-color: #333; /* Fondo gris oscuro para el menú desplegable */
+    border-radius: 5px;
+}
+
+.dropdown-item {
+    color: white !important; /* Texto blanco en el menú desplegable */
+}
+
+.dropdown-item:hover {
+    background-color: #555; /* Fondo gris más claro al pasar el ratón */
+}
+
+.btn-outline-light {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-light:hover {
+    background-color: white;
+    color: #007bff;
+}
+
+.form-control {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+}
+
+.form-control::placeholder {
+    color: #ccc;
+}
+
+.form-control:focus {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+
 /* ===============================
               Cartas
    =============================== */
+
+
+
+
+
+
+
 
