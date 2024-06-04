@@ -257,6 +257,26 @@ html {
     border: 2px solid #000000; 
   }
 
+  #formbtn3 {
+    width: 100%;
+    padding: 10px;
+    background-color: #000000; /* Fondo azul */
+    color: white; /* Texto blanco */
+    border: 2px solid #ffcc00; 
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de mano al pasar por el botón */
+    transition: background-color 0.3s ease; /* Transición suave para el fondo */
+    margin-top: 20px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 25px;
+  }
+  
+  #formbtn3:hover {
+    background-color: #ffcc00; /* Fondo azul más oscuro al pasar el ratón */
+    color: #000000;
+    border: 2px solid #000000; 
+  }
+
   #logo2{
     margin-top: 15px;
   }

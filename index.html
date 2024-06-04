@@ -9,12 +9,12 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Tienda Albo Campeón</title>
 
-  
+
 </head>
 
 <body>
 
-  
+
 
   <div id="contenedor">
     <div class="loader">
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  
+
 
   <div class="base" id="content" style="display: none;">
 
@@ -77,16 +77,24 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form>
+            <form action="register.php" method="post">
               <div class="mb-3">
                 <label for="registerEmail" class="form-label">Correo electrónico</label>
-                <input type="email" class="form-control" id="registerEmail" required>
+                <input type="email" class="form-control" id="registerEmail" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="registerUser" class="form-label">Nombre Usuario</label>
+                <input type="text" class="form-control" id="registerUser" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label for="registerRut" class="form-label">Rut</label>
+                <input type="text" class="form-control" id="registerRut" name="rut" required>
               </div>
               <div class="mb-3">
                 <label for="registerPassword" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="registerPassword" required>
+                <input type="password" class="form-control" id="registerPassword" name="password" required>
               </div>
-              <button type="submit" class="btn btn-primary" >Registrarse</button>
+              <a href="index.html"><button type="submit" class="btn btn-primary" id="formbtn3">Registrarse</button></a>
             </form>
           </div>
         </div>
@@ -123,13 +131,18 @@
 
 
 
-  </div>
 
+
+
+
+
+
+  </div>
 
   <audio id="miAudio" controls autoplay style="display: none;">
     <source src="MUSIC/Grande_Colocolo.mp3" type="audio/mpeg">
     Tu navegador no soporta la reproducción de audio.
-</audio>
+  </audio>
 
 
   <script src="JS/musica.js"></script>
@@ -138,7 +151,7 @@
     crossorigin="anonymous"></script>
   <script src="JS/loader.js"></script>
   <script src="login.js"></script>
-  
+
 
 
 </body>
