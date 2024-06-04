@@ -1,4 +1,8 @@
 // JavaScript
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     var loginModal = new bootstrap.Modal(document.getElementById('loginModal'), {});
     var registerModal = new bootstrap.Modal(document.getElementById('registerModal'), {});
@@ -11,3 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
       registerModal.show();
     });
   });
+
+  $("#formbtn3").click(function(){
+    $("input[type=text], input[type=email], input[type=password]").val("");
+});
+
+

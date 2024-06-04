@@ -17,17 +17,24 @@ $username = $_POST['username'];
 $rut = $_POST['rut'];
 $password = $_POST['password'];
 
-$sql = "INSERT INTO Usuarios (correo, username, rut, contrasena)
-VALUES ('$email', '$username', '$rut', '$password')";
+// Consulta para verificar si el correo electrónico o el RUT ya existen
+$checkSql = "SELECT * FROM Usuarios WHERE correo = '$email' OR rut = '$rut'";
+$checkResult = $conn->query($checkSql);
 
-
-if ($conn->query($sql) === TRUE) {
-  header("Location: index.html"); // Redirige al usuario a index.html
-  exit; // Asegúrate de llamar a exit después de header para detener la ejecución del script
+if ($checkResult->num_rows > 0) {
+    // Si la consulta devuelve un resultado, el correo electrónico o el RUT ya existen
+    echo json_encode(array("exists" => true));
 } else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
-}
+    // Si la consulta no devuelve un resultado, el correo electrónico y el RUT no existen y puedes insertar el nuevo registro
+    $sql = "INSERT INTO Usuarios (correo, username, rut, contrasena)
+    VALUES ('$email', '$username', '$rut', '$password')";
 
+    if ($conn->query($sql) === TRUE) {
+        echo json_encode(array("success" => true)); // Devuelve una respuesta JSON en lugar de redirigir
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
 
 $conn->close();
 ?>

@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="CSS/login.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Tienda Albo Campeón</title>
@@ -77,7 +78,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="register.php" method="post">
+            <form action="register.php" id="yourform" method="post">
               <div class="mb-3">
                 <label for="registerEmail" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control" id="registerEmail" name="email" required>
@@ -94,7 +95,7 @@
                 <label for="registerPassword" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="registerPassword" name="password" required>
               </div>
-              <a href="index.html"><button type="submit" class="btn btn-primary" id="formbtn3">Registrarse</button></a>
+              <button type="submit" class="btn btn-warning" id="formbtn3" >Registrarse</button>
             </form>
           </div>
         </div>
@@ -108,16 +109,16 @@
         <a href="" id="logo2"><img src="IMG/Colo_a.png" alt=""></a>
         <div class="card-body">
           <h5 class="card-title" id="loginCardLabel">INICIAR SESIÓN</h5>
-          <form class="cuerpoF">
+          <form id="loginForm" class="cuerpoF">
             <div class="mb-3" id="CuerpoI">
               <label for="loginEmail" class="form-label">CORREO ELECTRÓNICO</label>
-              <input type="email" class="form-control" id="loginEmail" required>
+              <input type="email" class="form-control" id="loginEmail" name="email" required>
             </div>
             <div class="mb-3" id="CuerpoC">
               <label for="loginPassword" class="form-label">CONTRASEÑA</label>
-              <input type="password" class="form-control" id="loginPassword" required>
+              <input type="password" class="form-control" id="loginPassword" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary" id="formbtn2">Iniciar sesión</button>
+            <button type="button" class="btn btn-primary" id="formbtn2">Iniciar sesión</button>
           </form>
         </div>
       </div>
@@ -144,6 +145,61 @@
     Tu navegador no soporta la reproducción de audio.
   </audio>
 
+
+  <script>
+$(document).ready(function() {
+  $("#formbtn2").on("click", function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: "login.php",
+      data: $("#loginForm").serialize(),
+      dataType: "json",
+      success: function(response) {
+        if (response.success) {
+          alert("Inicio de sesión exitoso.");
+          // Redirige al usuario a la página tienda.html
+          window.location.href = "tienda.html";
+        } else {
+          alert("Correo electrónico o contraseña incorrectos.");
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus, errorThrown);
+      }
+    });
+  });
+});
+</script>
+
+  <script>
+    $(document).ready(function() {
+      $("#yourform").on("submit", function(e) {
+          e.preventDefault(); // Evita el envío del formulario normal
+
+          $.ajax({
+              type: "POST",
+              url: "register.php",
+              data: $(this).serialize(), // Serializa los datos del formulario
+              dataType: "json",
+              success: function(response) {
+                  if (response.exists) {
+                      alert("El correo electrónico o el RUT ya existen.");
+                  } else if (response.success) {
+                      alert("Registro exitoso.");
+                      window.location.href = "index.html";
+                  } else {
+                      alert("Error al registrar.");
+                  }
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                  console.log(textStatus, errorThrown);
+              }
+          });
+      });
+    });
+  </script>
 
   <script src="JS/musica.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

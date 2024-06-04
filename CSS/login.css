@@ -105,11 +105,13 @@ html {
 .navbar {
   background-color: rgba(0, 0, 0, 0.8);
   /* Fondo negro con opacidad */
+  
 }
 
 .navbar {
   display: flex;
   justify-content: center;
+  border-radius: 5px;
 }
 
 .navbar .container-fluid {
@@ -257,7 +259,7 @@ html {
     border: 2px solid #000000; 
   }
 
-  #formbtn3 {
+  .formbtn3 {
     width: 100%;
     padding: 10px;
     background-color: #000000; /* Fondo azul */
@@ -271,7 +273,7 @@ html {
     font-size: 25px;
   }
   
-  #formbtn3:hover {
+  .formbtn3:hover {
     background-color: #ffcc00; /* Fondo azul más oscuro al pasar el ratón */
     color: #000000;
     border: 2px solid #000000; 
