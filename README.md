@@ -5,6 +5,7 @@ Tienda del Colo Colo es Chile.
 
 # Proyecto Compra Mbappe en Camino
 
+
 * El proyecto "Tienda-Alba" es una aplicación web para una tienda en línea del equipo de fútbol Colo Colo es Chile. Las principales funcionalidades del proyecto incluyen:
 
 ## 1.- Uso de HTML y PHP
@@ -51,3 +52,4 @@ Tienda del Colo Colo es Chile.
 # Paso 3
 
 Disfrutar de la pagina mas buena del Mundo !!
+

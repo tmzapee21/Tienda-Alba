@@ -62,7 +62,7 @@ function mostrarCarrito() {
           
 echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
           echo "<td>" . $row['cantidad'] . "</td>";
-          echo "<td>" . $row['precio'] . "</td>";
+          echo "<td>" . number_format($row['precio'] * $row['cantidad'], 3) . "</td>";
           
           echo "</tr>";
 

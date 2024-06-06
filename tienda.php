@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+
+
 // Cuando un usuario inicia sesión
 function iniciarSesion($username) {
     // Guarda el nombre de usuario en la sesión
@@ -207,6 +209,9 @@ function agregarAlCarrito(id, nombre, descripcion, cantidad, precio, imagen) {
         formCarrito.innerHTML += `
             <input type="hidden" name="productos[]" value='${JSON.stringify(producto)}'>
         `;
+
+        
+
     }
 
     // Guardar el carrito en localStorage
@@ -227,6 +232,8 @@ function agregarAlCarrito(id, nombre, descripcion, cantidad, precio, imagen) {
     document.getElementById('cantidad' + id).value = "1";
 
     alert('PRODUCTO AGREGADO');
+
+    
 
     
 }
