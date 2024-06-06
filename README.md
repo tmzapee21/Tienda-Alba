@@ -5,14 +5,33 @@ Tienda del Colo Colo es Chile.
 
 # Proyecto Compra Mbappe en Camino
 
+* El proyecto "Tienda-Alba" es una aplicación web para una tienda en línea del equipo de fútbol Colo Colo es Chile. Las principales funcionalidades del proyecto incluyen:
+
+## 1.- Uso de HTML y PHP
+
+* Usamos como estructura de la pagina HTML y PHP para poder hacer funciones especificas de actualización o ocupacion de variables, validaciones de la página
+
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+## 2.- Integración de Xampp
+
+* El proyecto está diseñado para ejecutarse en un servidor local utilizando XAMPP.
+
+* Instrucciones detalladas están proporcionadas para configurar y ejecutar el proyecto en el entorno XAMPP.
+
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+## 3.- Uso de AJAX
 
 
+
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 # URGENTE!!!
 
 * El proyecto es demasiado pesado ( 1.4 GB ) para subirlo desde git bash , con tal de solucionar este error subimos nuestro proyecto entero en archivo winrar y a un drive con todo el proyecto para descargar si necesita la ultima versión.
 
-
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 # Paso 1
 
