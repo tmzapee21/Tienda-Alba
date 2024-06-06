@@ -17,3 +17,9 @@ Tienda del Colo Colo es Chile.
 2.1 Despues de Hacer el paso 1, abriremos la aplicación Xampp Control el cual abrira una ventana pequeña con todas las aplicaciones manejables disponibles con lo cual iremos a activar "Apache" con el boton "Start".
 
 2.2 Una vez activada la aplicacion "Apache" Podremos dar click al boton "admin", El cual nos abrira una pagina web de xampp, nos dara una pagina con un url "http://localhost/dashboard/" el cual cambiaremos a "http://localhost/"nombre_carpeta_proyecto"/index.html" para que cargue la pagina de nuestro proyecto
+
+2.3 Una vez activada la aplicacion "Mysql" Podremos dar click al boton "admin", el cual nos abrira la pagina web de xampp phpmyadmin, nos mostrara las bases de datos de la pagina, con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" para que la pagina funcione correctamente 
+
+# Paso 3
+
+Disfrutar de la pagina mas buena del Mundo !!
