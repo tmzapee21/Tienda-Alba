@@ -1,4 +1,3 @@
-
 function mostrarCarrito() {
     var modal = document.getElementById('carritoModal');
     modal.style.display = 'block';
@@ -18,8 +17,7 @@ window.onclick = function(event) {
     }
 }
 
-
-var carrito = [];
+var carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
 
 function agregarAlCarrito(producto) {
     carrito.push(producto);
@@ -35,8 +33,10 @@ function agregarAlCarrito(producto) {
     if (modal) {
         modal.style.display = 'block';
     }
+
+    sessionStorage.setItem('carrito', JSON.stringify(carrito));
 }
 
 function comprar() {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
+    document.getElementById('formCarrito').submit();
 }

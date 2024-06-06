@@ -1,26 +1,37 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "usuarios";
+// login.php
+$host = "localhost";
+$db   = "usuarios";
+$user = "root";
+$pass = "";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Crear conexión
+$conn = new mysqli($host, $user, $pass, $db);
 
+// Verificar conexión
 if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+    die("Conexión fallida: " . $conn->connect_error);
 }
 
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$sql = "SELECT * FROM Usuarios WHERE correo = '$email' AND contrasena = '$password'";
-$result = $conn->query($sql);
+$sql = "SELECT username, rut FROM usuarios WHERE correo = ? AND contrasena = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $email, $password);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-  echo json_encode(array("success" => true));
+    $row = $result->fetch_assoc();
+    session_start();
+    $_SESSION['username'] = $row['username'];
+    $_SESSION['rut'] = $row['rut'];
+    echo "success";
 } else {
-  echo json_encode(array("success" => false));
+    echo "failure";
 }
 
+$stmt->close();
 $conn->close();
 ?>

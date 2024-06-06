@@ -1,6 +1,43 @@
 <?php
-// tienda.php
 session_start();
+
+// Cuando un usuario inicia sesión
+function iniciarSesion($username) {
+    // Guarda el nombre de usuario en la sesión
+    $_SESSION['username'] = $username;
+
+    // Crea un nuevo carrito para el usuario
+    $_SESSION['carrito'] = array();
+}
+
+// Cuando un usuario cierra la sesión
+function cerrarSesion() {
+    // Elimina el carrito
+    unset($_SESSION['carrito']);
+
+    // Elimina el nombre de usuario de la sesión
+    unset($_SESSION['username']);
+
+    // Destruye la sesión
+    session_destroy();
+}
+
+// Agrega un producto al carrito
+function agregarProducto($producto) {
+    $_SESSION['carrito'][] = $producto;
+}
+
+// Elimina un producto del carrito
+function eliminarProducto($indice) {
+    unset($_SESSION['carrito'][$indice]);
+    // Reindexa el array después de eliminar un producto
+    $_SESSION['carrito'] = array_values($_SESSION['carrito']);
+}
+
+// Obtiene todos los productos en el carrito
+function obtenerProductos() {
+    return $_SESSION['carrito'][$_SESSION['username']];
+}
 ?>
 
 
@@ -122,7 +159,9 @@ $productos = include 'productos.php';
         <!-- Aquí se mostrarán los productos del carrito -->
       </div>
       <div class="modal-footer" id="piso">
-        <a href="factura.html" class="btn5" onclick="comprar()">COMPRAR</a>
+      <form id="formCarrito" method="POST" action="agregar.php">
+        <a href="factura.php" class="btn5" onclick="comprar()">COMPRAR</a>
+        </form>
       </div>
     </div>
   </div>
@@ -162,14 +201,34 @@ function agregarAlCarrito(id, nombre, descripcion, cantidad, precio, imagen) {
         };
 
         carrito.push(producto);
+
+        // Agrega el producto al formulario
+        var formCarrito = document.getElementById('formCarrito');
+        formCarrito.innerHTML += `
+            <input type="hidden" name="productos[]" value='${JSON.stringify(producto)}'>
+        `;
     }
 
+    // Guardar el carrito en localStorage
     localStorage.setItem('carrito', JSON.stringify(carrito));
+
+    // Enviar los datos del carrito al servidor
+    $.ajax({
+        url: 'agregar.php',
+        method: 'POST',
+        data: { carrito: JSON.stringify(carrito) },
+        success: function(response) {
+            console.log(response);
+        }
+    });
+
     mostrarCarrito();
 
     document.getElementById('cantidad' + id).value = "1";
 
     alert('PRODUCTO AGREGADO');
+
+    
 }
 
 function eliminarProducto(id) {
@@ -219,6 +278,23 @@ $(document).ready(function(){
             success: function(response){
                 // Aquí puedes actualizar los productos en tu página con la respuesta del servidor
                 $(".container .row").html(response);
+            }
+        });
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    $('.btn5').click(function() {
+        var carrito = ...; // Aquí debes obtener los datos de tu carrito
+
+        $.ajax({
+            url: 'factura.php',
+            method: 'POST',
+            data: { productos: JSON.stringify(carrito) },
+            success: function(response) {
+                // Puedes manejar la respuesta del servidor aquí si es necesario
             }
         });
     });
