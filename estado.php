@@ -98,26 +98,23 @@ if ($result->num_rows > 0) {
     $estadoB = $rowEstado ? $rowEstado["EstadoB"] : "No especificado"; // Asegúrate de manejar el caso de que no haya un EstadoB
 
     // Inicio del formulario para cada boleta
-    echo "<form class='formularioBoletas' action='update2.php' method='post'>";
-    echo "<div class='formulario-boletas'>";
-      echo "<div class='form-group'>";
-      // Input oculto para el ID de la boleta
-      echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
-      // Información de la boleta, incluyendo EstadoB
-      echo "<label>ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: " . $estadoB . "</label>";
-      // Selector de estado
-      echo "<select class='form-control opciones' name='estado'>";
-      echo "<option value=''>Elija una opción:</option>";
-      echo "<option value='Entregado'>Entregado</option>";
-      echo "<option value='Rechazado'>Rechazado</option>";
-      echo "</select>";
-      // Campo de texto para la descripción del rechazo
-      echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
-      echo "</div>";
-    // Botón de envío para cada formulario
-    echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
-    echo "</div>";
-    echo "</form>"; // Cierre del formulario
+    // Asegúrate de que cada formulario tenga una clase única para los campos y ajusta el script de JavaScript correspondientemente.
+echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
+echo "<div class='formulario-boletas'>";
+  echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
+  echo "<label>ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: " . $estadoB . "</label>";
+  
+echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+  echo "<option value=''>Elija una opción:</option>";
+  echo "<option value='Entregado'>Entregado</option>";
+  echo "<option value='Rechazado'>Rechazado</option>";
+  echo "</select>";
+  echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+  echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+  echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+  echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+echo "</div>";
+echo "</form>";
   }
     
 } else {
@@ -127,43 +124,96 @@ $conn->close();
 ?>
 
 
+
+
     
 
     </div>
     </div>
 
 
-    <script>
-  // Selecciona todos los formularios con la clase 'formularioBoletas' en lugar de un ID único
+
+
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function() {
+  // Aplica el evento submit a todos los formularios de boletas
   document.querySelectorAll('.formularioBoletas').forEach(function(form) {
     form.addEventListener('submit', function(event) {
-      var estados = form.querySelectorAll('.opciones');
-      var descripciones = form.querySelectorAll('.descripcion');
-      var formValido = true;
+      var estadoSeleccionado = form.querySelector('.opciones').value; // Asume que hay un select con clase 'opciones' que contiene el estado
 
-      estados.forEach(function(estado, index) {
-          // Verifica si no se ha seleccionado una opción
-          if (estado.value === '') {
-              alert('Debe elegir una opción para cada boleta.');
-              estado.focus(); // Coloca el foco en el select que no tiene una opción elegida
-              formValido = false;
-              return false; // Sale del bucle actual
-          }
+      // Solo realiza esta validación si el estado es 'Entregado'
+      if (estadoSeleccionado === 'Entregado') {
+        var descripcionEntrega = form.querySelector('.descripcionEntrega').value.trim();
+        var imagenEntrega = form.querySelector('.imagenEntrega').value;
 
-          // Aplica la validación de descripción solo para rechazos
-          if (estado.value === 'Rechazado' && descripciones[index].value.trim() === '') {
-              alert('Debe proporcionar una descripción para los rechazos.');
-              descripciones[index].style.display = 'block'; // Asegúrate de que el campo de descripción sea visible
-              descripciones[index].focus(); // Coloca el foco en el campo de descripción vacío
-              formValido = false;
-          }
-      });
+        if (!descripcionEntrega) {
+          alert('Por favor, ingrese una descripción de entrega.');
+          event.preventDefault();
+          return false;
+        }
 
-      if (!formValido) {
-          event.preventDefault(); // Detiene el envío del formulario
+        if (!imagenEntrega) {
+          alert('Por favor, seleccione una imagen de entrega.');
+          event.preventDefault();
+          return false;
+        }
       }
+
+      // Continúa con otras validaciones aquí si es necesario
+      return true;
     });
   });
+});
+
+function mostrarCampos(selectElement, formElement) {
+  var descripcion = formElement.querySelector('.descripcion');
+  var descripcionEntrega = formElement.querySelector('.descripcionEntrega');
+  var imagenEntrega = formElement.querySelector('.imagenEntrega');
+
+  if (selectElement.value == 'Entregado') {
+    descripcionEntrega.style.display = 'block';
+    imagenEntrega.style.display = 'block';
+    descripcion.style.display = 'none';
+  } else {
+    descripcionEntrega.style.display = 'none';
+    imagenEntrega.style.display = 'none';
+    descripcion.style.display = 'block'; // Asegúrate de mostrar este campo si es necesario
+  }
+}
+</script>
+
+    <script>
+      // Selecciona todos los formularios con la clase 'formularioBoletas' en lugar de un ID único
+      document.querySelectorAll('.formularioBoletas').forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+          var estados = form.querySelectorAll('.opciones');
+          var descripciones = form.querySelectorAll('.descripcion');
+          var formValido = true;
+
+          estados.forEach(function(estado, index) {
+              // Verifica si no se ha seleccionado una opción
+              if (estado.value === '') {
+                  alert('Debe elegir una opción para cada boleta.');
+                  estado.focus(); // Coloca el foco en el select que no tiene una opción elegida
+                  formValido = false;
+                  return false; // Sale del bucle actual
+              }
+
+              // Aplica la validación de descripción solo para rechazos
+              if (estado.value === 'Rechazado' && descripciones[index].value.trim() === '') {
+                  alert('Debe proporcionar una descripción para los rechazos.');
+                  descripciones[index].style.display = 'block'; // Asegúrate de que el campo de descripción sea visible
+                  descripciones[index].focus(); // Coloca el foco en el campo de descripción vacío
+                  formValido = false;
+              }
+          });
+
+          if (!formValido) {
+              event.preventDefault(); // Detiene el envío del formulario
+          }
+        });
+      });
 </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
