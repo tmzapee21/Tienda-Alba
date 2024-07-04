@@ -2,6 +2,8 @@
 
 session_start();
 
+
+
 ?>
 
 <!DOCTYPE html>
@@ -11,6 +13,9 @@ session_start();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="CSS/factura.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Factura</title>
@@ -57,9 +62,10 @@ session_start();
         </div>
       </div>
     </nav>
+    
 
     <div>
-
+    <div>
     <?php
 // Conexión a la base de datos
 $host = 'localhost'; // Cambia esto a tu host
@@ -82,30 +88,105 @@ $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':usuario', $_SESSION['username']);
 $stmt->execute();
 
+
+
+
 while ($row = $stmt->fetch())
 {
-  echo '<div id="boletas2">
-  <div class="container">
-      <p>
-          <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
-              <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . '
-          </a>
-      </p>
-      <div class="collapse" id="facturaCollapse' . $row['ID_Boleta'] . '">
-          <div class="card card-body">
-              <img src="IMG/Colo_a.png" alt="Logo" height="10" class="logo">
-              <h5> Nº Factura #' . $row['ID_Boleta'] . '</h5>
-              <p>Empresa: ' . $row['Nombre_Empresa'] . '</p>
-              <p>Producto: ' . $row['Nombre_Producto'] . '</p>
-              <!-- ... el resto de los datos de la factura ... -->
+
+// Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
+$subtotal = $row['Precio'] * $row['Cantidad'];
+$IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
+$total = $subtotal + $IVA;
+
+echo '<div id="boletas2">
+<div class="container">
+    <p>
+        <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
+            <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . '
+            <button id="descargar' . $row['ID_Boleta'] . '">Descargar como PDF</button>
+        </a>
+    </p>
+      <div class="collapse" id="pdf' . $row['ID_Boleta'] . '">
+        <div class="collapse" id="facturaCollapse' . $row['ID_Boleta'] . '">
+          <div class="card card-body" id="titulo5">
+              
+              <div class="logo-y-titulo">  
+                  <img src="IMG/Colo_a.png" alt="Logo" height="80" class="logo">
+                  <h2> ORDEN DE COMPRA </h2>
+                  
+              </div>
+              <div class="logo-y-titulo2">
+              <div id="empresa">
+                <h3 id="empre">Nº ORDEN DE COMPRA: </h3>
+                <p>' . $row['ID_Boleta'] . '</p>
+              </div>
+                <div id="empresa">
+                    <h3 id="empre">EMPRESA: </h3>
+                    <p>' . $row['Nombre_Empresa'] . '</p>
+                </div>
+                
+                <div class="container3">
+                <div class="cp2" >
+                  <h3 id="empre4">DE: </h3>
+                  <p>' . $_SESSION['username'] . '</p>
+                  <p>' . $_SESSION['correo'] . '</p>
+                  <p>' . $_SESSION['rut'] . '</p>
+                  
+                </div>
+              
+            <div class="cp3" >
+              <div class="text-container">
+
+              <h3 id="empre4">COBRAR A: </h3>
+              <p>' . $row['usuario'] . '</p>
+              <p>' . $row['Correo'] . '</p>
+              <p>' . $row['Telefono'] . '</p>
+              <p>' . $row['Direccion'] . '</p>
+              </div>
+            </div>
+
+            </div>
+            
+            <div class="cp4">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Nombre del producto</th>
+                            <th>Descripción del producto</th>
+                            <th>Cantidad</th>
+                            <th>Forma de pago</th>
+                            <th>Subtotal</th>
+                            <th>IVA</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>' . $row['Nombre_Empresa'] . '</td>
+                            <td>' . $row['Nombre_Producto'] . '</td>
+                            <td>' . $row['Descripcion_Producto'] . '</td>
+                            <td>' . $row['Cantidad'] . '</td>
+                            <td>' . $row['Pago'] . '</td>
+                            <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
+                            <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
+                            <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+              
+              </div>
           </div>
-      </div>
-  </div>
-</div>';
+          </div>
+    </div>
+  </div>';
 }
 ?>
 
-
+      </div>
     </div>
 
 
@@ -121,13 +202,31 @@ while ($row = $stmt->fetch())
 
   </div>
 
-
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="JS/loader.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="JS/loader.js"></script>
+<script>
+var botones = document.querySelectorAll('[id^="descargar"]');
+botones.forEach(function(boton) {
+    boton.addEventListener('click', function() {
+        var idBoleta = this.id.replace('descargar', '');
+        var elemento = document.getElementById('facturaCollapse' + idBoleta);
+        $(elemento).collapse('show');
+        setTimeout(function() {
+            var opt = {
+                margin:       1,
+                filename:     'Boleta.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 1, pagesplit: true },
+                jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' } // Cambia 'a4' a 'a5'
+            };
+            html2pdf().set(opt).from(elemento).save().then(function() {
+                $(elemento).collapse('hide');
+            });
+        }, 1000);
+    });
+});
+</script>
 </body>
 </html>
