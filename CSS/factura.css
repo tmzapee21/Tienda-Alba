@@ -6,8 +6,8 @@
    html {
        margin: 0;
        padding: 0;
-       height: 100%;
-       overflow: hidden;
+       height: 100vh;
+       overflow: auto;
    }
    
    #contenedor {
@@ -64,9 +64,11 @@
    
    html,
    body {
-       height: 100%;
+       height: 100vh;
        margin: 0;
        padding: 0;
+       overflow: auto;
+       
    }
    
    .base {
@@ -94,6 +96,7 @@
                var(--c2) 0 120deg,
                var(--c3) 0 180deg);
        background-size: var(--s) calc(var(--s) * 0.577);
+       background-repeat: repeat;
    }
    
    .base h1 {
@@ -242,13 +245,19 @@
 
 
 
-    #UsuarioNew span {
-        color: #ffffff;
-        font-size: 18px;
-        /* Agrega aquí los estilos que necesites */
-        margin-right: 20px;
-        margin-left: 20px;
-    }
+#UsuarioNew span {
+    color: #ffffff;
+    font-size: 18px;
+    margin-right: 20px;
+    margin-left: 20px;
+    transition: background-color 2s ease;
+    cursor: pointer;
+}
+
+#UsuarioNew span:hover{
+    color: #ffcc00;
+    
+}
 
 
     /* CSS */
@@ -320,3 +329,213 @@ table td:nth-child(3) {
 .descripcion {
     padding-right: 20px; /* Ajusta este valor a la cantidad de espacio que desees */
   }
+
+
+
+.btn-primary {
+    width: 100%;
+}
+
+
+
+/* ===============================
+            Boleta Button
+    =============================== */
+
+
+.container a{
+    width: 100%;
+    background-color: #424242; 
+    color: white; 
+    border: 1px solid #ffcc00; 
+    padding: 15px 0; 
+    font-size: 20px; 
+    cursor: pointer;
+    text-align: left;
+    padding-left: 20px;
+    border-radius: 15px;
+    
+}
+
+.container a:hover{
+    width: 100%;
+    background-color: #ffcc00; 
+    color: rgb(0, 0, 0); 
+    border: 2px solid #000000; 
+    padding: 15px 0; 
+    font-size: 20px; 
+    cursor: pointer;
+    text-align: left;
+    padding-left: 20px;
+    
+}
+
+
+
+#boletas2{
+    margin-top: 30px;
+}
+
+
+
+/* ===============================
+          Boleta Estructura
+   =============================== */
+
+
+
+
+
+.logo-y-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.logo {
+    height: 190px;
+    width: auto;
+    margin-top: 20px;
+    
+}
+
+
+
+#titulo5 h2 {
+    color: #000;
+    margin-right: 50px;
+    margin-top: 60px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 60px;
+}
+
+.logo-y-titulo2 {
+    text-align: right;
+
+}
+
+.logo-y-titulo2 p{
+    color: #000;
+    margin-right: 50px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    
+}
+
+
+
+#titulo5 h5 {
+    color: #000;
+    margin-right: 50px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 30px;
+}
+
+
+#empre{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+}
+
+#empresa {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-right: 50px;
+    
+}
+
+
+
+
+
+#empresa h3, #empresa p {
+    margin: 0;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+thead {
+    background-color: #000000;
+    color: #fff;
+    
+    border: 2px solid #ffffff;
+}
+
+thead th {
+    padding: 10px;
+    text-align: left;
+    border: 2px solid #000000;
+}
+
+tbody {
+    background-color: #ffffff;
+    
+    border: 2px solid #000000;
+
+}
+
+tbody td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #d5e8ef;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+.container3 {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 40px;
+    padding: 0;
+}
+
+.cp2 {
+    align-self: flex-start;
+    margin: auto;
+    padding: 0;
+    margin-right: 50px;
+}
+
+
+
+
+
+#empre4{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    margin: 50px;
+}
+
+.cp3 h3, .cp3 p {
+    margin: auto;
+    padding: 0;
+    text-align: left;
+}
+
+.pdf{
+
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    color: rgb(255, 255, 255);
+    background-color: #ff0000;
+    align-items: flex-end;
+    padding: 3px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 90px;
+    float: right;
+    margin: 20px;
+    
+}

@@ -1,82 +1,11 @@
 <?php
-
 session_start();
 
-function mostrarRutUsuario() {
-  // Crear conexión
-  $conn = new mysqli('localhost', 'root', '', 'usuarios');
 
-  // Verificar conexión
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
 
-  // Recuperar el RUT del usuario actual
-  $sql = "SELECT rut FROM usuarios WHERE username = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("s", $_SESSION['username']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-      // Devolver el RUT del usuario
-      $row = $result->fetch_assoc();
-      return $row['rut'];
-  } else {
-      return "No se encontró el RUT del usuario.";
-  }
-
-  $conn->close();
-}
-
-function mostrarCarrito() {
-  // Crear conexión
-  $conn = new mysqli('localhost', 'root', '', 'usuarios');
-
-  // Verificar conexión
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-  // Recuperar todos los productos en el carrito
-  $sql = "SELECT * FROM carritos2";
-  $result = $conn->query($sql);
-
-  $subtotal = 0;
-  $iva = 0.19; // Ajusta este valor al IVA correspondiente
-
-  // Obtener el RUT del usuario
-  $rutUsuario = mostrarRutUsuario();
-
-  echo "<table id='tablaProductos'>";
-  echo "<tr><th></th><th>Nombre del producto</th><th>RUT</th><th>Descripcion</th><th>Cantidad</th><th>Precio</th></tr>";
-
-  if ($result->num_rows > 0) {
-      // Mostrar los detalles de cada producto
-      while ($row = $result->fetch_assoc()) {
-          echo "<tr>";
-          echo "<td><img src='" . $row['imagen'] . "' width='70' height='70'></td>";
-          
-          echo "<td>" . $row['nombre'] . "</td>";
-          echo "<td>" . $rutUsuario . "</td>"; // Mostrar el RUT del usuario
-          
-echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
-          echo "<td>" . $row['cantidad'] . "</td>";
-          echo "<td>" . $row['precio'] . "</td>";
-          
-          echo "</tr>";
-
-          $subtotal += $row['precio'] * $row['cantidad'];
-      }
-  } else {
-      echo "No se encontraron productos en el carrito.";
-  }
-
-  echo "</table>";
-
-  $conn->close();
-}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -85,6 +14,9 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="CSS/factura.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Factura</title>
@@ -114,7 +46,15 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">CATALOGO</a>
+              <a class="nav-link" href="tienda.php">TIENDA</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="factura.php">BOLETAS</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="estado.php">CONFIRMACIONES</a>
             </li>
 
           </ul>
@@ -131,16 +71,146 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
         </div>
       </div>
     </nav>
+    
 
-    <div class="card">
-  <div class="card-body">
-    <h1 id="boleta" class="card-title">Boleta</h1>
+    <div>
+    <div>
     <?php
-    mostrarRutUsuario();
-    mostrarCarrito();
-    ?>
-  </div>
-</div>
+// Conexión a la base de datos
+$host = 'localhost'; // Cambia esto a tu host
+$db   = 'usuarios'; // Cambia esto a tu nombre de base de datos
+$user = 'root'; // Cambia esto a tu usuario
+$pass = ''; // Cambia esto a tu contraseña
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$opt = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+$pdo = new PDO($dsn, $user, $pass, $opt);
+
+// Consulta para obtener los datos de la tabla "factura"
+$sql = "SELECT * FROM factura WHERE usuario = :usuario";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':usuario', $_SESSION['username']);
+$stmt->execute();
+
+
+
+
+while ($row = $stmt->fetch())
+{
+
+// Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
+$subtotal = $row['Precio'] * $row['Cantidad'];
+$IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
+$total = $subtotal + $IVA;
+
+echo '<div id="boletas2">
+<div class="container">
+    <p>
+        <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
+            <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . ' - ' . $row['Estado'] . '
+            
+          
+        </a>
+        
+        
+        <form action="modi.php" method="POST">
+    <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($row['ID_Boleta']) . '">
+    <button type="submit" class="modi">Modificar</button>
+</form>
+        <button id="descargar' . $row['ID_Boleta'] . '" class="pdf" >PDF</button>
+    </p>
+      
+        <div id="facturaCollapse' . $row['ID_Boleta'] . '" class="collapse">
+          <div class="card card-body" id="titulo5">
+              
+              <div class="logo-y-titulo">  
+                  <img src="IMG/Colo_a.png" alt="Logo" height="80" class="logo">
+                  <h2> ORDEN DE COMPRA </h2>
+                  
+              </div>
+              <div class="logo-y-titulo2">
+              <div id="empresa">
+                <h3 id="empre">Nº ORDEN DE COMPRA: </h3>
+                <p>' . $row['ID_Boleta'] . '</p>
+              </div>
+                <div id="empresa">
+                    <h3 id="empre">EMPRESA: </h3>
+                    <p>' . $row['Nombre_Empresa'] . '</p>
+                </div>
+                
+                <div class="container3">
+                <div class="cp2" >
+                  <h3 id="empre4">DE: </h3>
+                  <p>' . $_SESSION['username'] . '</p>
+                  <p>' . $_SESSION['correo'] . '</p>
+                  <p>' . $_SESSION['rut'] . '</p>
+                  
+                </div>
+              
+            <div class="cp3" >
+              <div class="text-container">
+
+              <h3 id="empre4">COBRAR A: </h3>
+              <p>' . $row['usuario'] . '</p>
+              <p>' . $row['Correo'] . '</p>
+              <p>' . $row['Telefono'] . '</p>
+              <p>' . $row['Direccion'] . '</p>
+              </div>
+            </div>
+
+            </div>
+            
+            <div class="cp4">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Nombre del producto</th>
+                            <th>Descripción del producto</th>
+                            <th>Cantidad</th>
+                            <th>Forma de pago</th>
+                            <th>Subtotal</th>
+                            <th>IVA</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>' . $row['Nombre_Empresa'] . '</td>
+                            <td>' . $row['Nombre_Producto'] . '</td>
+                            <td>' . $row['Descripcion_Producto'] . '</td>
+                            <td>' . $row['Cantidad'] . '</td>
+                            <td>' . $row['Pago'] . '</td>
+                            <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
+                            <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
+                            <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+              
+              </div>
+          </div>
+      </div>
+    
+  </div>';
+}
+?>
+
+      </div>
+    </div>
+
+
+
+
+
+
 
 
 
@@ -149,13 +219,135 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
 
   </div>
 
+  <script>
+document.querySelectorAll('.modi').forEach(button => {
+    button.addEventListener('click', function() {
+        const idBoleta = this.getAttribute('data-id-boleta');
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="JS/loader.js"></script>
+        // Crear un formulario de manera dinámica
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'modi.php';
+
+        // Crear un input oculto para el ID de la boleta
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'ID_Boleta';
+        hiddenField.value = idBoleta;
+
+        // Añadir el input oculto al formulario
+        form.appendChild(hiddenField);
+
+        // Añadir el formulario al cuerpo del documento
+        document.body.appendChild(form);
+
+        // Enviar el formulario
+        form.submit();
+    });
+});
+</script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+$(document).ready(function(){
+  $("#nuevoBoton").click(function(){
+    var correo = '<?php echo $_SESSION['correo']; ?>';
+    var opt = {
+        margin:       1,
+        filename:     'Boleta.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 1, pagesplit: true },
+        jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' }
+    };
+    var elementoFactura = document.getElementById('facturaCollapse');
+    if (elementoFactura) {
+        html2pdf().set(opt).from(elementoFactura).save().outputPdf().then(function (pdf) {
+            var data = new FormData();
+            data.append('pdf', new Blob([pdf], { type: 'application/pdf' }), 'Boleta.pdf');
+            data.append('correo', correo);
+
+            fetch('enviarCorreo.php', {
+                method: 'POST',
+                body: data
+            }).then(function (response) {
+                return response.text();
+            }).then(function (text) {
+                console.log(text);
+            }).catch(function (error) {
+                console.error(error);
+            });
+        });
+    }
+  });
+});
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="JS/loader.js"></script>
+<script>
+  setTimeout(function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "es.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Opcional: Manejar la respuesta del servidor
+                    console.log(xhr.responseText);
+                }
+            };
+            xhr.send();
+        }, 60000); // 10000 milisegundos = 10 segundos
+</script>
+<script>
+var opt = {
+    margin:       1,
+    filename:     'Boleta.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 1, pagesplit: true },
+    jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' }
+};
+var elementoFactura = null; // Inicializa elementoFactura
+
+var botones = document.querySelectorAll('[id^=\"descargar\"]');
+botones.forEach(function(boton) {
+    boton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        var idBoleta = this.id.replace('descargar', '');
+        elementoFactura = document.getElementById('facturaCollapse' + idBoleta);
+        $(elementoFactura).collapse('show');
+
+        if (elementoFactura) {
+            html2pdf().set(opt).from(elementoFactura).save().then(function () {
+                setTimeout(function () {
+                    $(elementoFactura).collapse('hide');
+                }, 2000);
+            });
+        }
+    });
+});
+
+document.getElementById('nuevoBoton').addEventListener('click', function() {
+    if (elementoFactura) {
+        html2pdf().set(opt).from(elementoFactura).save().outputPdf().then(function (pdf) {
+            var data = new FormData();
+            data.append('pdf', new Blob([pdf], { type: 'application/pdf' }), 'Boleta.pdf');
+            data.append('to', $_SESSION['correo']);
+
+            fetch('/send-email', {
+                method: 'POST',
+                body: data
+            }).then(function (response) {
+                return response.text();
+            }).then(function (text) {
+                console.log(text);
+            }).catch(function (error) {
+                console.error(error);
+            });
+        });
+    }
+});
+</script>
+
 
 </body>
 </html>

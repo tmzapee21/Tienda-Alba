@@ -6,8 +6,8 @@ body,
 html {
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow: hidden;
+    height: 100vh;
+    overflow: auto;
 }
 
 #contenedor {
@@ -64,9 +64,11 @@ html {
 
 html,
 body {
-    height: 100%;
+    height: 100vh;
     margin: 0;
     padding: 0;
+    overflow: auto;
+    
 }
 
 .base {
@@ -94,6 +96,7 @@ body {
             var(--c2) 0 120deg,
             var(--c3) 0 180deg);
     background-size: var(--s) calc(var(--s) * 0.577);
+    background-repeat: repeat;
 }
 
 .base h1 {
@@ -192,48 +195,6 @@ body {
 }
 
 
-/* Estilo para las tarjetas de productos */
-.card {
-
-    transition: 0.3s;
-    border-radius: 5px;
-    margin: 20px;
-    border: 2px solid #000000;
-}
-
-.card:hover {
-    border: 2px solid #ffcc00;
-
-}
-
-.card-img-top {
-    width: 100%;
-    height: 13vw;
-    object-fit: cover;
-
-}
-
-.card-body {
-    padding: 20px;
-
-}
-
-.card-title {
-    font-size: 20px;
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.card-text {
-    font-size: 19px;
-    color: #333;
-}
-
-.card p {
-    font-size: 16px;
-    color: #333;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-}
 
 
 
@@ -261,226 +222,105 @@ body {
 
 
 
+
+
 #UsuarioNew span {
     color: #ffffff;
     font-size: 18px;
-    /* Agrega aquí los estilos que necesites */
     margin-right: 20px;
     margin-left: 20px;
+    transition: background-color 2s ease;
+    cursor: pointer;
 }
+
+#UsuarioNew span:hover{
+    color: #ffcc00;
+    
+}
+
 
 
 /* ===============================
-                CARTAS
+                Inputs
     =============================== */
 
-    .card-body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    
-    .card-body input[type="number"] {
-        width: 50%;
-        margin-bottom: 10px;
-    }
-    
-    .card-body .btn {
-        width: 100%;
-        background-color: #000000;
-        color: white;
-        border: 2px solid #ffcc00;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
 
-    .card-body .btn:hover {
-        background-color: #ffcc00;
-    color: #000000;
-    border: 2px solid #000000;
-    }
-
-
-/* ===============================
-                CARRITO
-    =============================== */
-
-/* Estilos para el modal de inicio de sesión y registro */
-.modal-content {
-    background-color: #000000; /* Fondo gris oscuro para la ventana modal */
-    color: rgb(0, 0, 0); /* Texto blanco */
-    border-radius: 10px; /* Bordes redondeados */
-    border: none; /* Sin borde */
-  }
-  
-  .modal-header {
-    border-bottom: 1px solid #555; /* Línea de separación gris */
-    background-color: #000000;
-    border: 1px solid #555;
-  }
-  
-  .modal-header .modal-title {
-    font-size: 1.5em; /* Tamaño de fuente más grande */
-    color: #ffcc00; /* Color dorado para el título */
-  }
-  
-  .modal-header .btn-close {
-    background-color: rgb(196, 196, 196); /* Fondo blanco para el botón de cierre */
-    border-radius: 50%; /* Bordes redondeados */
-    opacity: 1; /* Totalmente opaco */
-  }
-  
-  .modal-body {
-    padding: 20px; /* Espaciado interno */
-    background-color: black;
-    border: 1px solid #555;
-    color: white;
-  }
-  
-
-  .form {
-    width: 100%;
-    margin: 0 auto;
-  }
-  
-  .form h2 {
-    text-align: center;
-    color: #ffcc00; /* Color dorado para el título del formulario */
-  }
-  
-  .form input {
-    display: block;
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #444; /* Fondo gris oscuro para las entradas */
-    border: 1px solid #555; /* Borde gris */
-    border-radius: 5px; /* Bordes redondeados */
-    color: rgb(255, 255, 255); /* Texto blanco */
-  }
-  
-  .form input::placeholder {
-    color: #ccc; /* Color gris claro para los placeholders */
-  }
-  
-  #formbtn {
-    width: 100%;
-    padding: 10px;
-    background-color: #414141; /* Fondo azul */
-    color: white; /* Texto blanco */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cursor de mano al pasar por el botón */
-    transition: background-color 0.3s ease; /* Transición suave para el fondo */
-  }
-  
-  #formbtn:hover {
-    background-color: #d8d8d8; /* Fondo azul más oscuro al pasar el ratón */
-    color: #000000;
-  }
-  
-  .form p {
-    text-align: center;
-    margin-top: 10px;
-  }
-  
-  .form p a {
-    color: #d8d8d8; /* Color dorado para los enlaces */
-    text-decoration: none; /* Sin subrayado */
-  }
-  
-  .form p a:hover {
-    text-decoration: underline; /* Subrayado al pasar el ratón */
-  }
-  
-  .form-label {
-    color: #ffcc00; /* Color dorado para las etiquetas */
-  }
-  
-  #fotoc{
-    height: 20px;
-    width: 100%;
-  }
-
-
-  #piso {
-    padding: 15px; /* Espaciado interno */
-    background-color: black;
-    border: 1px solid #555;
-}
-
-.btn5 {
-    width: 100%;
-    padding: 3px;
-    background-color: #000000;
-    color: white;
-    border: 2px solid #ffcc00;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 18px;
-    text-decoration: none;
-}
-
-.btn5:hover{
-    background-color: #ffcc00;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-#btn-eliminar {
-    background-color: #000000;
-    color: white;
-    border: 1px solid #ffcc00;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin: 20px;
-    border-radius: 15px;
-    transition: background-color 0.3s ease;
-}
-
-#btn-eliminar:hover{
-    background-color: #ffcc00;
-    /* Fondo azul más oscuro al pasar el ratón */
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-
-.producto-carrito {
-    display: flex;
-    align-items: start;
-    border-bottom: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.producto-carrito img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-right: 10px;
-}
-
-.producto-detalles {
+.form-group {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    
+  }
+
+  #nombreEmpresa {
+    width: 50%;
+
+  }
+
+  .form-group label {
+    color: white;
+    margin-bottom: 15px;
+    margin-top: 35px;
+  }
+
+  #formContainer {
+    display: flex;
     justify-content: space-between;
 }
 
-.producto-texto {
-    font-weight: bold;
-    margin-bottom: 5px;
+#leftSide, #rightSide {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    width: 45%;
 }
 
-.eliminar {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
+#nombreProducto{
+    width: 100%;
 }
+
+
+#descripcionProducto{
+    width: 100%;
+}
+
+#cantidad{
+    width: 100%;
+}
+
+
+.form-container {
+    background-color: black;
+    padding: 20px;
+    color: white;
+    width: 75%; 
+    height: auto;
+    min-height: 80vh;
+    overflow: auto;
+    margin-bottom: 10px;
+    border: 1px solid #ffcc00;
+    border-radius: 25px;
+}
+
+
+#ventana55 { /* o el selector del elemento padre de .form-container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    
+}
+
+#btn6{
+    width: 75%;
+    margin: 20px;
+    padding: 10px;
+}
+
+.error {
+    margin-top: 10px;
+    color: red;
+  }

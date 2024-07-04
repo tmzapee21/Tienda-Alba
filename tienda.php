@@ -1,42 +1,88 @@
 <?php
 session_start();
 
-// Cuando un usuario inicia sesión
-function iniciarSesion($username) {
-    // Guarda el nombre de usuario en la sesión
-    $_SESSION['username'] = $username;
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "usuarios";
 
-    // Crea un nuevo carrito para el usuario
-    $_SESSION['carrito'] = array();
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Verificar conexión
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
 }
 
-// Cuando un usuario cierra la sesión
-function cerrarSesion() {
-    // Elimina el carrito
-    unset($_SESSION['carrito']);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Recoger los datos del formulario
+  $nombreProducto = $_POST['nombreProducto'] ?? '';
+  $descripcionProducto = $_POST['descripcionProducto'] ?? '';
+  $cantidad = $_POST['cantidad'] ?? '';
+  $precio = $_POST['precio'] ?? '';
+  $correo = $_POST['correo'] ?? '';
+  $direccion = $_POST['direccion'] ?? '';
+  $telefono = $_POST['telefono'] ?? '';
+  $opciones = $_POST['opciones'] ?? '';
+  $usuario = $_SESSION['username'];
 
-    // Elimina el nombre de usuario de la sesión
-    unset($_SESSION['username']);
+  // Nombre de la empresa fijo
+  $nombreEmpresa = "Tienda Alba";
+  $estadoBoleta = "Por Entregar";
+  $estado = "Recien Creada";
+  
 
-    // Destruye la sesión
-    session_destroy();
+  // Insertar los datos en la tabla
+  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago, usuario, Estado, EstadoB)
+VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones', '$usuario','$estado', '$estadoBoleta')";
+
+
+// Validar los campos aquí
+if(empty($nombreProducto) || empty($descripcionProducto) || empty($cantidad) || empty($precio) || empty($correo) || empty($direccion) || empty($telefono) || empty($opciones)) {
+  echo "Todos los campos son obligatorios.";
+  return;
 }
 
-// Agrega un producto al carrito
-function agregarProducto($producto) {
-    $_SESSION['carrito'][] = $producto;
+if(!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+  echo "Por favor, introduce un correo válido.";
+  return;
 }
 
-// Elimina un producto del carrito
-function eliminarProducto($indice) {
-    unset($_SESSION['carrito'][$indice]);
-    // Reindexa el array después de eliminar un producto
-    $_SESSION['carrito'] = array_values($_SESSION['carrito']);
+if(!preg_match("/^[0-9]{9}$/", $telefono)) {
+  echo "Por favor, introduce un número de teléfono válido.";
+  return;
 }
 
-// Obtiene todos los productos en el carrito
-function obtenerProductos() {
-    return $_SESSION['carrito'][$_SESSION['username']];
+if($cantidad <= 0) {
+  echo "La cantidad debe ser mayor que cero.";
+  return;
+}
+
+if($precio <= 0) {
+  echo "El precio debe ser mayor que cero.";
+  return;
+}
+
+
+
+// Ejecutar la consulta SQL y redirigir
+if ($conn->query($sql) === TRUE) {
+
+      
+
+
+  // Redirigir a factura.php
+  echo 'success';
+  return;
+} else {
+  echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+
+
+
+
+
 }
 ?>
 
@@ -84,16 +130,19 @@ function obtenerProductos() {
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">CATALOGO</a>
+              <a class="nav-link" href="tienda.php">TIENDA</a>
             </li>
 
-            <a class="nav-link" onclick="mostrarCarrito()" data-bs-toggle="modal" data-bs-target="#carritoModal">CARRITO</a>
+            <li class="nav-item">
+              <a class="nav-link" href="factura.php">BOLETAS</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="estado.php">CONFIRMACIONES</a>
+            </li>
 
           </ul>
-          <form class="d-flex" role="search">
-    <input class="form-control me-3" type="search" placeholder="Buscar" aria-label="Search" name="q">
-    <button class="btn btn-outline-light" type="submit">Buscar</button>
-</form>
+          
           <div id="UsuarioNew">
 
             <?php
@@ -119,53 +168,72 @@ function obtenerProductos() {
       </div>
     </div>
 
-    <!-- Cartas Productos-->
+    <!-- Inputs Productos-->
 
+<!-- Inputs Productos-->
+<div id="ventana55">
+  <div class="form-container">
+  <form method="post" action="tienda.php" onsubmit="return validarFormulario()">
+        <div id="formContainer">
+          <div id="leftSide">
+            <div class="form-group">
+              <label for="nombreProducto">Nombre de Producto</label>
+              <input type="text" class="form-control" id="nombreProducto" name="nombreProducto" placeholder="Introduce el nombre del producto">
+              <span id="error-nombreProducto" class="error"></span>
 
-<?php
-// Incluye el archivo PHP y obtén los productos
-$productos = include 'productos.php';
-?>
+            </div>
+            <div class="form-group">
+              <label for="descripcionProducto">Descripcion del producto</label>
+              <input type="text" class="form-control" id="descripcionProducto" name="descripcionProducto" placeholder="Introduce la descripción del producto">
+              <span id="error-descrip" class="error"></span>
+            </div>
+            <div class="form-group">
+              <label for="cantidad">Cantidad</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Introduce la cantidad">
+              <span id="error-cantidad" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="number" class="form-control" id="precio" name="precio" placeholder="Introduce el precio">
+                <span id="error-precio" class="error"></span>
+            </div>
+          </div>
 
-
-<div class="container">
-  <div class="row">
-  <?php foreach ($productos as $producto): ?>
-    <div class="col-md-3">
-      <div class="card" style="width: 18rem;">
-        <img src="<?php echo $producto["Imagen"]; ?>" class="card-img-top" alt="<?php echo $producto["Nombre_producto"]; ?>">
-        <div class="card-body">
-          <h5 class="card-title"><?php echo $producto["Nombre_producto"]; ?></h5>
-          <p class="card-text"><?php echo $producto["Descripcion"]; ?></p>
-          <p class="card-text">Precio: $<?php echo $producto["Precio"]; ?></p>
-          <p class="card-text">Stock: <?php echo $producto["Stock"]; ?></p>
-          <input type="number" id="cantidad<?php echo $producto["id"]; ?>" value="1" min="1" max="<?php echo $producto["Stock"]; ?>">
-          <button class="btn btn-primary" onclick="agregarAlCarrito('<?php echo $producto["id"]; ?>', '<?php echo $producto["Nombre_producto"]; ?>', '<?php echo $producto["Descripcion"]; ?>', document.getElementById('cantidad<?php echo $producto["id"]; ?>').value, '<?php echo $producto["Precio"]; ?>', '<?php echo $producto["Imagen"]; ?>')">Agregar al carrito</button>
+          <div id="rightSide">
+            <div class="form-group">
+              <label for="correo">Correo</label>
+              <input type="email" class="form-control" id="correo" name="correo" placeholder="Introduce el correo">
+              <span id="error-correo" class="error"></span>
+            </div>
+            <div class="form-group">
+              <label for="direccion">Dirección</label>
+              <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Introduce la dirección">
+              <span id="error-direc" class="error"></span>
+            </div>
+            <div class="form-group">
+              <label for="telefono">Telefono</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Introduce el teléfono">
+              <span id="error-tele" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="opciones">Pago</label>
+                <select class="form-control" id="opciones" name="opciones">
+                    <option value="">Elija una opcion:</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+                <span id="error-pago" class="error"></span>
+            </div>
+          </div>
         </div>
-      </div>
+        <button type="submit" class="btn btn-outline-light" id="btn6">Comprar</button>
+      </form>
     </div>
-<?php endforeach; ?>
   </div>
-</div>
 
-<div class="modal fade" id="carritoModal" tabindex="-1" aria-labelledby="carritoModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="carritoModalLabel">Carrito de compras</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="productosCarrito">
-        <!-- Aquí se mostrarán los productos del carrito -->
-      </div>
-      <div class="modal-footer" id="piso">
-      <form id="formCarrito" method="POST" action="agregar.php">
-        <a href="factura.php" class="btn5" onclick="comprar()">COMPRAR</a>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+
+
+
 
 
 
@@ -180,126 +248,18 @@ $productos = include 'productos.php';
     </audio>
 
   </div>
-
   <script>
-var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-function agregarAlCarrito(id, nombre, descripcion, cantidad, precio, imagen) {
-    var idNumerico = Number(id);
-    var productoExistente = carrito.find(producto => producto.id === idNumerico);
-
-    if (productoExistente) {
-        productoExistente.cantidad += parseInt(cantidad);
-    } else {
-        var producto = {
-            id: idNumerico,
-            nombre: nombre,
-            descripcion: descripcion,
-            cantidad: parseInt(cantidad),
-            precio: precio,
-            imagen: imagen // Asegúrate de que estás agregando la imagen aquí
-        };
-
-        carrito.push(producto);
-
-        // Agrega el producto al formulario
-        var formCarrito = document.getElementById('formCarrito');
-        formCarrito.innerHTML += `
-            <input type="hidden" name="productos[]" value='${JSON.stringify(producto)}'>
-        `;
-    }
-
-    // Guardar el carrito en localStorage
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-
-    // Enviar los datos del carrito al servidor
-    $.ajax({
-        url: 'agregar.php',
-        method: 'POST',
-        data: { carrito: JSON.stringify(carrito) },
-        success: function(response) {
-            console.log(response);
-        }
-    });
-
-    mostrarCarrito();
-
-    document.getElementById('cantidad' + id).value = "1";
-
-    alert('PRODUCTO AGREGADO');
-
-    
-}
-
-function eliminarProducto(id) {
-    var idNumerico = Number(id);
-    carrito = carrito.filter(producto => producto.id !== idNumerico);
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    mostrarCarrito();
-}
-
-function mostrarCarrito() {
-    var productosCarrito = document.getElementById('productosCarrito');
-    productosCarrito.innerHTML = '';
-
-    carrito.forEach(producto => {
-        var precioTotal = (producto.cantidad * producto.precio).toFixed(3);
-        productosCarrito.innerHTML += '<div class="producto-carrito"><img src="' + producto.imagen + '" alt="' + producto.nombre + '"><div class="producto-detalles"><span class="producto-texto">' + producto.nombre + '</span><span>' + producto.descripcion + '</span><span>Cantidad: ' + producto.cantidad + '</span><span>Precio: ' + precioTotal + '</span>' + 
-        '<button class="eliminar" data-id="' + producto.id + '" id="btn-eliminar" >Eliminar</button></div></div>';
-    });
-}
-
-
-
-
-document.getElementById('productosCarrito').addEventListener('click', function(event) {
-    if (event.target.classList.contains('eliminar')) {
-        eliminarProducto(event.target.getAttribute('data-id'));
-    }
+    window.addEventListener('beforeunload', function (e) {
+  if (!validarFormulario()) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 });
-
-window.onload = function() {
-    localStorage.removeItem('carrito');
-}
-</script>
-
-
+  </script>
   
-<script src="carrito.js"></script>
+  <script src="JS/validaciones.js"></script>
   <script src="JS/musica.js"></script>
-  <script>
-$(document).ready(function(){
-    $("form").on("submit", function(event){
-        event.preventDefault();
-        $.ajax({
-            url: "buscar.php",
-            type: "get",
-            data: $(this).serialize(),
-            success: function(response){
-                // Aquí puedes actualizar los productos en tu página con la respuesta del servidor
-                $(".container .row").html(response);
-            }
-        });
-    });
-});
-</script>
 
-<script>
-$(document).ready(function() {
-    $('.btn5').click(function() {
-        var carrito = ...; // Aquí debes obtener los datos de tu carrito
-
-        $.ajax({
-            url: 'factura.php',
-            method: 'POST',
-            data: { productos: JSON.stringify(carrito) },
-            success: function(response) {
-                // Puedes manejar la respuesta del servidor aquí si es necesario
-            }
-        });
-    });
-});
-</script>
 
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

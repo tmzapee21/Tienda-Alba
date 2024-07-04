@@ -43,23 +43,9 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="index.html">HOME</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">BOLETA</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="#">CARRITO</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="tienda.html">CATALOGO</a>
-            </li>
-
+            
           </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-3" type="search" placeholder="Buscar" aria-label="Search">
-            <button class="btn btn-outline-light" type="submit">Buscar</button>
-          </form>
+          
 
           <button class="btn btn-outline-light" type="button" data-bs-toggle="modal"
             data-bs-target="#registerModal">Registrarse</button>
@@ -95,7 +81,7 @@
                 <label for="registerPassword" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="registerPassword" name="password" required>
               </div>
-              <button type="submit" class="btn btn-warning" id="formbtn3" >Registrarse</button>
+              <button type="submit" class="btn btn-warning" id="formbtn3">Registrarse</button>
             </form>
           </div>
         </div>
@@ -109,7 +95,7 @@
         <a href="" id="logo2"><img src="IMG/Colo_a.png" alt=""></a>
         <div class="card-body">
           <h5 class="card-title" id="loginCardLabel">INICIAR SESIÓN</h5>
-          <form id="loginForm" class="cuerpoF">
+          <form id="loginForm" class="cuerpoF" method="POST">
             <div class="mb-3" id="CuerpoI">
               <label for="loginEmail" class="form-label">CORREO ELECTRÓNICO</label>
               <input type="email" class="form-control" id="loginEmail" name="email" required>
@@ -118,7 +104,7 @@
               <label for="loginPassword" class="form-label">CONTRASEÑA</label>
               <input type="password" class="form-control" id="loginPassword" name="password" required>
             </div>
-            <button type="button" class="btn btn-primary" id="formbtn2">Iniciar sesión</button>
+            <button type="submit" class="btn btn-primary" id="formbtn2">Iniciar sesión</button>
           </form>
         </div>
       </div>
@@ -138,70 +124,69 @@
 
 
 
+
   </div>
 
-  <audio id="miAudio" controls autoplay style="display: none;">
-    <source src="MUSIC/Grande_Colocolo.mp3" type="audio/mpeg">
-    Tu navegador no soporta la reproducción de audio.
-  </audio>
-
+  
 
   <script>
-$(document).ready(function() {
-  $("#formbtn2").on("click", function(e) {
-    e.preventDefault();
+    // script.js
+    // Asegúrate de que este código esté dentro de una etiqueta <script> en tu archivo HTML
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
 
-    $.ajax({
-      type: "POST",
-      url: "login.php",
-      data: $("#loginForm").serialize(),
-      dataType: "json",
-      success: function(response) {
-        if (response.success) {
-          alert("Inicio de sesión exitoso.");
-          // Redirige al usuario a la página tienda.html
-          window.location.href = "tienda.html";
-        } else {
-          alert("Correo electrónico o contraseña incorrectos.");
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "login.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            if (this.responseText === "success") {
+                window.location.href = "tienda.php";
+            } else {
+                alert("Correo electrónico o contraseña incorrectos");
+            }
         }
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus, errorThrown);
-      }
-    });
-  });
+    }
+
+    var email = document.getElementById('loginEmail').value;
+    var password = document.getElementById('loginPassword').value;
+    xhr.send("email=" + email + "&password=" + password);
 });
-</script>
+
+
+
+  </script>
 
   <script>
-    $(document).ready(function() {
-      $("#yourform").on("submit", function(e) {
-          e.preventDefault(); // Evita el envío del formulario normal
+    $(document).ready(function () {
+      $("#yourform").on("submit", function (e) {
+        e.preventDefault(); // Evita el envío del formulario normal
 
-          $.ajax({
-              type: "POST",
-              url: "register.php",
-              data: $(this).serialize(), // Serializa los datos del formulario
-              dataType: "json",
-              success: function(response) {
-                  if (response.exists) {
-                      alert("El correo electrónico o el RUT ya existen.");
-                  } else if (response.success) {
-                      alert("Registro exitoso.");
-                      window.location.href = "index.html";
-                  } else {
-                      alert("Error al registrar.");
-                  }
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                  console.log(textStatus, errorThrown);
-              }
-          });
+        $.ajax({
+          type: "POST",
+          url: "register.php",
+          data: $(this).serialize(), // Serializa los datos del formulario
+          dataType: "json",
+          success: function (response) {
+            if (response.exists) {
+              alert("El correo electrónico o el RUT ya existen.");
+            } else if (response.success) {
+              alert("Registro exitoso.");
+              window.location.href = "index.html";
+            } else {
+              alert("Error al registrar.");
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus, errorThrown);
+          }
+        });
       });
     });
   </script>
 
-  <script src="JS/musica.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
