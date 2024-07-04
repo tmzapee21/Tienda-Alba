@@ -24,20 +24,20 @@ $telefono = isset($_POST['Telefono']) ? filter_var($_POST['Telefono'], FILTER_SA
 $pago = isset($_POST['Pago']) ? filter_var($_POST['Pago'], FILTER_SANITIZE_STRING) : '';
 $facturaId = isset($_POST['ID_Boleta']) ? filter_var($_POST['ID_Boleta'], FILTER_SANITIZE_NUMBER_INT) : 0;
 
-// Preparar la consulta SQL para actualizar los datos
-$sql = "UPDATE factura SET Nombre_Producto=?, Descripcion_Producto=?, Cantidad=?, Precio=?, Correo=?, Direccion=?, Telefono=?, Pago=? WHERE ID_Boleta = ?";
+// Preparar la consulta SQL para actualizar los datos y cambiar el estado a "Rectificada"
+$sql = "UPDATE factura SET Nombre_Producto=?, Descripcion_Producto=?, Cantidad=?, Precio=?, Correo=?, Direccion=?, Telefono=?, Pago=?, Estado='Rectificada' WHERE ID_Boleta = ?";
 
 $stmt = $conn->prepare($sql);
 if ($stmt) {
     $stmt->bind_param("ssidsissi", $nombreProducto, $descripcionProducto, $cantidad, $precio, $correo, $direccion, $telefono, $pago, $facturaId);
     
     // Ejecutar el statement
-if ($stmt->execute()) {
-    header("Location: factura.php"); // Redirige a factura.php
-    exit;
-} else {
-    echo "Error al actualizar los datos.";
-}
+    if ($stmt->execute()) {
+        header("Location: factura.php"); // Redirige a factura.php
+        exit;
+    } else {
+        echo "Error al actualizar los datos.";
+    }
 
     // Cerrar el statement
     $stmt->close();
@@ -48,6 +48,4 @@ if ($stmt->execute()) {
 // Cerrar la conexión
 $conn->close();
 ?>
-
-
 
