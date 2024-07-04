@@ -206,3 +206,4 @@ $conn->close(); // Es buena práctica cerrar la conexión cuando ya no es necesa
     <script src="JS/loader.js"></script>
 
 </body>
+</html>

@@ -137,6 +137,10 @@ if ($conn->query($sql) === TRUE) {
               <a class="nav-link" href="factura.php">BOLETAS</a>
             </li>
 
+            <li class="nav-item">
+              <a class="nav-link" href="estado.php">CONFIRMACIONES</a>
+            </li>
+
           </ul>
           
           <div id="UsuarioNew">
