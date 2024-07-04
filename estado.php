@@ -99,22 +99,25 @@ if ($result->num_rows > 0) {
 
     // Inicio del formulario para cada boleta
     // Asegúrate de que cada formulario tenga una clase única para los campos y ajusta el script de JavaScript correspondientemente.
-echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
-echo "<div class='formulario-boletas'>";
-  echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
-  echo "<label>ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: " . $estadoB . "</label>";
-  
-echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
-  echo "<option value=''>Elija una opción:</option>";
-  echo "<option value='Entregado'>Entregado</option>";
-  echo "<option value='Rechazado'>Rechazado</option>";
-  echo "</select>";
-  echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
-  echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
-  echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
-  echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
-echo "</div>";
-echo "</form>";
+    echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
+    echo "<div class='formulario-boletas'>";
+    echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
+    echo "<label>ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: " . $estadoB . "</label>";
+    // Condición para mostrar el botón solo si el estado es "Entregado"
+    if ($estadoB == "Entregado") {
+      echo "<button type='button' onclick='visualizarDatosAjax(" . $row["ID_Boleta"] . ")'>Visualizar</button>";
+  }
+    echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+    echo "<option value=''>Elija una opción:</option>";
+    echo "<option value='Entregado'>Entregado</option>";
+    echo "<option value='Rechazado'>Rechazado</option>";
+    echo "</select>";
+    echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+    echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+    echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+    echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+    echo "</div>";
+    echo "</form>";
   }
     
 } else {
@@ -126,6 +129,24 @@ $conn->close();
 
 
 
+
+<div id="modalComprobante" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>COMPROBANTE</h1>
+    <div class="contenido-modal">
+      <div class="informacion">
+      
+      </div>
+      <div class="comprobante">
+        <!-- Aquí puedes insertar el comprobante, por ejemplo, una imagen o un PDF -->
+        <p>Comprobante aquí</p>
+      </div>
+  </div>
+</div>
+
+
+
     
 
     </div>
@@ -133,6 +154,42 @@ $conn->close();
 
 
 
+
+
+
+    <script>
+function visualizarDatosAjax(idBoleta) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.querySelector(".contenido-modal .informacion").innerHTML = this.responseText;
+      var modal = document.getElementById("modalComprobante");
+      modal.style.display = "block";
+
+      // Mover la asignación del evento del botón de cerrar aquí
+      var span = document.getElementsByClassName("close")[0];
+      if (span) {
+        span.addEventListener('click', function() {
+          modal.style.display = "none";
+        });
+      }
+    }
+  };
+  xhttp.open("POST", "obtener.php", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("idBoleta=" + idBoleta);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Manejar el cierre del modal al hacer clic fuera de él
+  var modal = document.getElementById("modalComprobante");
+  window.addEventListener('click', function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  });
+});
+</script>
 
 <script>
   
