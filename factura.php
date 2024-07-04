@@ -2,80 +2,6 @@
 
 session_start();
 
-function mostrarRutUsuario() {
-  // Crear conexión
-  $conn = new mysqli('localhost', 'root', '', 'usuarios');
-
-  // Verificar conexión
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-  // Recuperar el RUT del usuario actual
-  $sql = "SELECT rut FROM usuarios WHERE username = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("s", $_SESSION['username']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-      // Devolver el RUT del usuario
-      $row = $result->fetch_assoc();
-      return $row['rut'];
-  } else {
-      return "No se encontró el RUT del usuario.";
-  }
-
-  $conn->close();
-}
-
-function mostrarCarrito() {
-  // Crear conexión
-  $conn = new mysqli('localhost', 'root', '', 'usuarios');
-
-  // Verificar conexión
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-  // Recuperar todos los productos en el carrito
-  $sql = "SELECT * FROM carritos2";
-  $result = $conn->query($sql);
-
-  $subtotal = 0;
-  $iva = 0.19; // Ajusta este valor al IVA correspondiente
-
-  // Obtener el RUT del usuario
-  $rutUsuario = mostrarRutUsuario();
-
-  echo "<table id='tablaProductos'>";
-  echo "<tr><th></th><th>Nombre del producto</th><th>RUT</th><th>Descripcion</th><th>Cantidad</th><th>Precio</th></tr>";
-
-  if ($result->num_rows > 0) {
-      // Mostrar los detalles de cada producto
-      while ($row = $result->fetch_assoc()) {
-          echo "<tr>";
-          echo "<td><img src='" . $row['imagen'] . "' width='70' height='70'></td>";
-          
-          echo "<td>" . $row['nombre'] . "</td>";
-          echo "<td>" . $rutUsuario . "</td>"; // Mostrar el RUT del usuario
-          
-echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
-          echo "<td>" . $row['cantidad'] . "</td>";
-          echo "<td>" . number_format($row['precio'] * $row['cantidad'], 3) . "</td>";
-          
-          echo "</tr>";
-
-          $subtotal += $row['precio'] * $row['cantidad'];
-      }
-  } else {
-      echo "No se encontraron productos en el carrito.";
-  }
-
-  echo "</table>";
-
-  $conn->close();
-}
 ?>
 
 <!DOCTYPE html>
@@ -114,7 +40,7 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">CATALOGO</a>
+              <a class="nav-link" href="tienda.php">TIENDA</a>
             </li>
 
           </ul>
@@ -132,15 +58,61 @@ echo "<td class='descripcion'>" . $row['descripcion'] . "</td>";
       </div>
     </nav>
 
-    <div class="card">
-  <div class="card-body">
-    <h1 id="boleta" class="card-title">Boleta</h1>
+    <div>
+
     <?php
-    mostrarRutUsuario();
-    mostrarCarrito();
-    ?>
+// Conexión a la base de datos
+$host = 'localhost'; // Cambia esto a tu host
+$db   = 'usuarios'; // Cambia esto a tu nombre de base de datos
+$user = 'root'; // Cambia esto a tu usuario
+$pass = ''; // Cambia esto a tu contraseña
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$opt = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+$pdo = new PDO($dsn, $user, $pass, $opt);
+
+// Consulta para obtener los datos de la tabla "factura"
+$sql = "SELECT * FROM factura WHERE usuario = :usuario";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':usuario', $_SESSION['username']);
+$stmt->execute();
+
+while ($row = $stmt->fetch())
+{
+  echo '<div id="boletas2">
+  <div class="container">
+      <p>
+          <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
+              <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . '
+          </a>
+      </p>
+      <div class="collapse" id="facturaCollapse' . $row['ID_Boleta'] . '">
+          <div class="card card-body">
+              <img src="IMG/Colo_a.png" alt="Logo" height="10" class="logo">
+              <h5> Nº Factura #' . $row['ID_Boleta'] . '</h5>
+              <p>Empresa: ' . $row['Nombre_Empresa'] . '</p>
+              <p>Producto: ' . $row['Nombre_Producto'] . '</p>
+              <!-- ... el resto de los datos de la factura ... -->
+          </div>
+      </div>
   </div>
-</div>
+</div>';
+}
+?>
+
+
+    </div>
+
+
+
+
+
+
 
 
 

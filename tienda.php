@@ -24,13 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $direccion = $_POST['direccion'] ?? '';
   $telefono = $_POST['telefono'] ?? '';
   $opciones = $_POST['opciones'] ?? '';
+  $usuario = $_SESSION['username'];
 
   // Nombre de la empresa fijo
   $nombreEmpresa = "Tienda Alba";
 
   // Insertar los datos en la tabla
-  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago)
-  VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones')";
+  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago, usuario)
+VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones', '$usuario')";
 
 // Validar los campos aquí
 if(empty($nombreProducto) || empty($descripcionProducto) || empty($cantidad) || empty($precio) || empty($correo) || empty($direccion) || empty($telefono) || empty($opciones)) {
@@ -113,7 +114,11 @@ if ($conn->query($sql) === TRUE) {
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">CATALOGO</a>
+              <a class="nav-link" href="tienda.php">TIENDA</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="factura.php">BOLETAS</a>
             </li>
 
           </ul>

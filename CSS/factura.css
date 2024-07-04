@@ -242,13 +242,19 @@
 
 
 
-    #UsuarioNew span {
-        color: #ffffff;
-        font-size: 18px;
-        /* Agrega aquí los estilos que necesites */
-        margin-right: 20px;
-        margin-left: 20px;
-    }
+#UsuarioNew span {
+    color: #ffffff;
+    font-size: 18px;
+    margin-right: 20px;
+    margin-left: 20px;
+    transition: background-color 2s ease;
+    cursor: pointer;
+}
+
+#UsuarioNew span:hover{
+    color: #ffcc00;
+    
+}
 
 
     /* CSS */
@@ -320,3 +326,69 @@ table td:nth-child(3) {
 .descripcion {
     padding-right: 20px; /* Ajusta este valor a la cantidad de espacio que desees */
   }
+
+
+
+.btn-primary {
+    width: 100%;
+}
+
+
+
+/* ===============================
+            Boleta Button
+    =============================== */
+
+
+.container a{
+    width: 100%;
+    background-color: #424242; 
+    color: white; 
+    border: 1px solid #ffcc00; 
+    padding: 15px 0; 
+    font-size: 20px; 
+    cursor: pointer;
+    text-align: left;
+    padding-left: 20px;
+    border-radius: 15px;
+    
+}
+
+.container a:hover{
+    width: 100%;
+    background-color: #ffcc00; 
+    color: rgb(0, 0, 0); 
+    border: 2px solid #000000; 
+    padding: 15px 0; 
+    font-size: 20px; 
+    cursor: pointer;
+    text-align: left;
+    padding-left: 20px;
+    
+}
+
+
+
+#boletas2{
+    margin-top: 30px;
+}
+
+
+
+/* ===============================
+          Boleta Estructura
+   =============================== */
+
+
+
+img {
+    
+}
+
+.logo {
+    width: 150px; 
+    height: 80px; 
+    position: absolute; 
+    top: 10px; 
+    left: 10px; 
+}
