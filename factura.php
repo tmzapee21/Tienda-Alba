@@ -54,7 +54,7 @@ session_start();
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="factura.php">Pagar o Rechazar</a>
+              <a class="nav-link" href="estado.php">CONFIRMACIONES</a>
             </li>
 
           </ul>
