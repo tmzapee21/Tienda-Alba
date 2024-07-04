@@ -6,7 +6,7 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-if (isset($_POST['idBoleta'])) {
+if(isset($_POST['idBoleta'])) {
     $idBoleta = intval($_POST['idBoleta']);
 
     $query = "SELECT ID_Entrega, ID_Boleta, EstadoB, Descripcion, Comprobante FROM entrega WHERE ID_Boleta = ?";
@@ -15,37 +15,28 @@ if (isset($_POST['idBoleta'])) {
         if ($stmt->execute()) {
             $resultado = $stmt->get_result();
             if ($fila = $resultado->fetch_assoc()) {
+                echo "<p>ID Entrega: " . $fila['ID_Entrega'] . "</p>";
+                echo "<p>ID Boleta: " . $fila['ID_Boleta'] . "</p>";
+                echo "<p>Estado: " . $fila['EstadoB'] . "</p>";
+                echo "<p>Descripción: " . $fila['Descripcion'] . "</p>";
+                
                 if (!empty($fila['Comprobante'])) {
-                    // Asumiendo que 'Comprobante' ahora contiene la ruta de la imagen
-                    $rutaImagen = $fila['Comprobante'];
-                    if (file_exists($rutaImagen)) {
-                        echo "<div>";
-                        echo "<p>ID Entrega: " . htmlspecialchars($fila['ID_Entrega']) . "</p>";
-                        echo "<p>ID Boleta: " . htmlspecialchars($fila['ID_Boleta']) . "</p>";
-                        echo "<p>Estado: " . htmlspecialchars($fila['EstadoB']) . "</p>";
-                        echo "<p>Descripción: " . htmlspecialchars($fila['Descripcion']) . "</p>";
-                        // Mostrar la imagen directamente usando su ruta
-                        echo "<img src='" . htmlspecialchars($rutaImagen) . "' alt='Comprobante' />";
-                        echo "</div>";
-                    } else {
-                        echo "<p>La imagen no se encuentra o la ruta es incorrecta.</p>";
-                    }
+                    // Determinar dinámicamente el tipo MIME
+                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+                    $tipoMime = $finfo->buffer($fila['Comprobante']); // Obtener el tipo MIME del BLOB
+                    echo "<img src='data:" . $tipoMime . ";base64," . base64_encode($fila['Comprobante']) . "' alt='Comprobante' />";
                 } else {
-                    echo "<p>El comprobante está vacío.</p>";
+                    echo "El comprobante está vacío.";
                 }
             } else {
-                echo "<p>No se encontraron resultados.</p>";
+                echo "No se encontraron resultados.";
             }
         } else {
-            echo "<p>Error al ejecutar la consulta: " . htmlspecialchars($stmt->error) . "</p>";
+            echo "Error al ejecutar la consulta: " . $stmt->error;
         }
         $stmt->close();
     } else {
-        echo "<p>Error al preparar la consulta: " . htmlspecialchars($conn->error) . "</p>";
+        echo "Error al preparar la consulta: " . $conn->error;
     }
-
-    $conn->close();
-} else {
-    echo "<p>ID de Boleta no proporcionado.</p>";
 }
 ?>
