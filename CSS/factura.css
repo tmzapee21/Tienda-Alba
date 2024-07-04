@@ -525,3 +525,17 @@ tbody tr:last-child {
     text-align: left;
 }
 
+.pdf{
+
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    color: rgb(255, 255, 255);
+    background-color: #ff0000;
+    align-items: flex-end;
+    padding: 3px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 90px;
+    float: right;
+    margin: 20px;
+    
+}

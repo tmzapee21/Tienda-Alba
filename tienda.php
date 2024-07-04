@@ -28,10 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Nombre de la empresa fijo
   $nombreEmpresa = "Tienda Alba";
+  $estadoBoleta = "Por Entregar";
+  $estado = "Recien Creada";
+  
 
   // Insertar los datos en la tabla
-  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago, usuario)
-VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones', '$usuario')";
+  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago, usuario, Estado, EstadoB)
+VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones', '$usuario','$estado', '$estadoBoleta')";
+
 
 // Validar los campos aquí
 if(empty($nombreProducto) || empty($descripcionProducto) || empty($cantidad) || empty($precio) || empty($correo) || empty($direccion) || empty($telefono) || empty($opciones)) {
@@ -59,14 +63,26 @@ if($precio <= 0) {
   return;
 }
 
+
+
 // Ejecutar la consulta SQL y redirigir
 if ($conn->query($sql) === TRUE) {
+
+      
+
+
   // Redirigir a factura.php
   echo 'success';
   return;
 } else {
   echo "Error: " . $sql . "<br>" . $conn->error;
 }
+
+
+
+
+
+
 }
 ?>
 
