@@ -25,6 +25,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     session_start();
+    $_SESSION['correo'] = $email; // Aquí se define $_SESSION['correo']
     $_SESSION['username'] = $row['username'];
     $_SESSION['rut'] = $row['rut'];
     echo "success";
