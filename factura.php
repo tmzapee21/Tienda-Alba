@@ -1,10 +1,11 @@
 <?php
-
 session_start();
 
 
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -46,6 +47,14 @@ session_start();
 
             <li class="nav-item">
               <a class="nav-link" href="tienda.php">TIENDA</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="factura.php">BOLETAS</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="factura.php">Pagar o Rechazar</a>
             </li>
 
           </ul>
@@ -103,12 +112,20 @@ echo '<div id="boletas2">
 <div class="container">
     <p>
         <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
-            <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . '
-            <button id="descargar' . $row['ID_Boleta'] . '">Descargar como PDF</button>
+            <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . ' - ' . $row['Estado'] . '
+            
+          
         </a>
+        
+        
+        <form action="modi.php" method="POST">
+    <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($row['ID_Boleta']) . '">
+    <button type="submit" class="modi">Modificar</button>
+</form>
+        <button id="descargar' . $row['ID_Boleta'] . '" class="pdf" >PDF</button>
     </p>
-      <div class="collapse" id="pdf' . $row['ID_Boleta'] . '">
-        <div class="collapse" id="facturaCollapse' . $row['ID_Boleta'] . '">
+      
+        <div id="facturaCollapse' . $row['ID_Boleta'] . '" class="collapse">
           <div class="card card-body" id="titulo5">
               
               <div class="logo-y-titulo">  
@@ -180,8 +197,8 @@ echo '<div id="boletas2">
               
               </div>
           </div>
-          </div>
-    </div>
+      </div>
+    
   </div>';
 }
 ?>
@@ -202,31 +219,135 @@ echo '<div id="boletas2">
 
   </div>
 
+  <script>
+document.querySelectorAll('.modi').forEach(button => {
+    button.addEventListener('click', function() {
+        const idBoleta = this.getAttribute('data-id-boleta');
+
+        // Crear un formulario de manera dinámica
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'modi.php';
+
+        // Crear un input oculto para el ID de la boleta
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'ID_Boleta';
+        hiddenField.value = idBoleta;
+
+        // Añadir el input oculto al formulario
+        form.appendChild(hiddenField);
+
+        // Añadir el formulario al cuerpo del documento
+        document.body.appendChild(form);
+
+        // Enviar el formulario
+        form.submit();
+    });
+});
+</script>
+
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+$(document).ready(function(){
+  $("#nuevoBoton").click(function(){
+    var correo = '<?php echo $_SESSION['correo']; ?>';
+    var opt = {
+        margin:       1,
+        filename:     'Boleta.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 1, pagesplit: true },
+        jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' }
+    };
+    var elementoFactura = document.getElementById('facturaCollapse');
+    if (elementoFactura) {
+        html2pdf().set(opt).from(elementoFactura).save().outputPdf().then(function (pdf) {
+            var data = new FormData();
+            data.append('pdf', new Blob([pdf], { type: 'application/pdf' }), 'Boleta.pdf');
+            data.append('correo', correo);
+
+            fetch('enviarCorreo.php', {
+                method: 'POST',
+                body: data
+            }).then(function (response) {
+                return response.text();
+            }).then(function (text) {
+                console.log(text);
+            }).catch(function (error) {
+                console.error(error);
+            });
+        });
+    }
+  });
+});
+</script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 <script src="JS/loader.js"></script>
 <script>
-var botones = document.querySelectorAll('[id^="descargar"]');
-botones.forEach(function(boton) {
-    boton.addEventListener('click', function() {
-        var idBoleta = this.id.replace('descargar', '');
-        var elemento = document.getElementById('facturaCollapse' + idBoleta);
-        $(elemento).collapse('show');
-        setTimeout(function() {
-            var opt = {
-                margin:       1,
-                filename:     'Boleta.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 1, pagesplit: true },
-                jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' } // Cambia 'a4' a 'a5'
+  setTimeout(function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "es.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Opcional: Manejar la respuesta del servidor
+                    console.log(xhr.responseText);
+                }
             };
-            html2pdf().set(opt).from(elemento).save().then(function() {
-                $(elemento).collapse('hide');
+            xhr.send();
+        }, 60000); // 10000 milisegundos = 10 segundos
+</script>
+<script>
+var opt = {
+    margin:       1,
+    filename:     'Boleta.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 1, pagesplit: true },
+    jsPDF:        { unit: 'in', format: 'a2', orientation: 'portrait' }
+};
+var elementoFactura = null; // Inicializa elementoFactura
+
+var botones = document.querySelectorAll('[id^=\"descargar\"]');
+botones.forEach(function(boton) {
+    boton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        var idBoleta = this.id.replace('descargar', '');
+        elementoFactura = document.getElementById('facturaCollapse' + idBoleta);
+        $(elementoFactura).collapse('show');
+
+        if (elementoFactura) {
+            html2pdf().set(opt).from(elementoFactura).save().then(function () {
+                setTimeout(function () {
+                    $(elementoFactura).collapse('hide');
+                }, 2000);
             });
-        }, 1000);
+        }
     });
 });
+
+document.getElementById('nuevoBoton').addEventListener('click', function() {
+    if (elementoFactura) {
+        html2pdf().set(opt).from(elementoFactura).save().outputPdf().then(function (pdf) {
+            var data = new FormData();
+            data.append('pdf', new Blob([pdf], { type: 'application/pdf' }), 'Boleta.pdf');
+            data.append('to', $_SESSION['correo']);
+
+            fetch('/send-email', {
+                method: 'POST',
+                body: data
+            }).then(function (response) {
+                return response.text();
+            }).then(function (text) {
+                console.log(text);
+            }).catch(function (error) {
+                console.error(error);
+            });
+        });
+    }
+});
 </script>
+
+
 </body>
 </html>
