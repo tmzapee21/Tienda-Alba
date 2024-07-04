@@ -229,9 +229,14 @@ body {
     font-size: 18px;
     margin-right: 20px;
     margin-left: 20px;
-    
+    transition: background-color 2s ease;
+    cursor: pointer;
 }
 
+#UsuarioNew span:hover{
+    color: #ffcc00;
+    
+}
 
 
 
