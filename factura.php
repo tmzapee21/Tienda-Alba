@@ -210,14 +210,13 @@ $totalP += $total;
                                 <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
                                 <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
                                 <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
-                                <td>' . number_format($totalP, 0, ',', '.') . ' CLP</td>
                                   </tr>';
                         }
                         // Asegúrate de colocar el totalP fuera del bucle si necesitas mostrar el total general después de listar todos los productos
-echo '<tr>
-<td colspan="8" style="text-align: right;">Total General:</td>
-<td>' . number_format($totalP, 0, ',', '.') . ' CLP</td>
-</tr>
+                        echo '<tr>
+                        <td colspan="7" style="text-align: right;">Total de la Factura:</td>
+                        <td>' . number_format($totalP, 0, ',', '.') . ' CLP</td>
+                        </tr>
                             
 
                   </tbody>
