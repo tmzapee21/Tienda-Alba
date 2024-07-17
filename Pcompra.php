@@ -28,19 +28,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $estadoBoleta = "Por Entregar";
         $estado = "Recien Creada";
 
-        // Modificar esta consulta para incluir los datos de los productos
-        // Nota: Esta es una simplificación. Deberías ajustarla según tu esquema de base de datos y necesidades.
-        $sqlInicial = "INSERT INTO factura (Nombre_Empresa, Estado, EstadoB, Correo, Direccion, Telefono, Pago, Usuario, Rut_Cliente, Nombre_Producto, Descripcion_Producto, Cantidad, Precio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmtInicial = $conn->prepare($sqlInicial);
+        // Insertar la factura sin los detalles del producto
+        $sqlFactura = "INSERT INTO factura (Nombre_Empresa, Estado, EstadoB, Correo, Direccion, Telefono, Pago, Usuario, Rut_Cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmtFactura = $conn->prepare($sqlFactura);
+        $stmtFactura->bind_param("sssssssss", $nombreEmpresa, $estado, $estadoBoleta, $correo, $direccion, $telefono, $opciones, $usuario, $rutCliente);
+        $stmtFactura->execute();
+        $idBoleta = $conn->insert_id; // Recuperar el ID de la factura insertada
 
-        // Asumiendo que solo insertarás un producto por factura en este ejemplo simplificado
-        $nombreProducto = $productos[0]['nombreProducto'] ?? 'Nombre no proporcionado';
-        $descripcionProducto = $productos[0]['descripcionProducto'] ?? 'Descripción no proporcionada';
-        $cantidad = $productos[0]['cantidad'] ?? 0;
-        $precio = $productos[0]['precio'] ?? 0.0;
+        // Insertar cada producto en la factura
+        $sqlProducto = "INSERT INTO detalle_factura (ID_Boleta, Nombre_Producto, Descripcion_Producto, Cantidad, Precio) VALUES (?, ?, ?, ?, ?)";
+        $stmtProducto = $conn->prepare($sqlProducto);
 
-        $stmtInicial->bind_param("sssssssssssid", $nombreEmpresa, $estado, $estadoBoleta, $correo, $direccion, $telefono, $opciones, $usuario, $rutCliente, $nombreProducto, $descripcionProducto, $cantidad, $precio);
-        $stmtInicial->execute();
+        foreach ($productos as $producto) {
+            $nombreProducto = $producto['nombreProducto'] ?? 'Nombre no proporcionado';
+            $descripcionProducto = $producto['descripcionProducto'] ?? 'Descripción no proporcionada';
+            $cantidad = $producto['cantidad'] ?? 0;
+            $precio = $producto['precio'] ?? 0.0;
+
+            $stmtProducto->bind_param("issid", $idBoleta, $nombreProducto, $descripcionProducto, $cantidad, $precio);
+            $stmtProducto->execute();
+        }
 
         // Si todo fue bien, confirmar la transacción
         $conn->commit();
