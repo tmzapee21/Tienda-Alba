@@ -56,11 +56,14 @@
 
 # Paso 1
 
-- 1.1 El proyecto debe abrirse con la aplicacion xampp control, con lo cual primero hay que ubicar la carpeta del proyecto dentro de los proyectos de xampp.
+- 1.1 Al momento de que su equipo haya iniciado, ya con los software de xaamp ya instalados, mediante el perfil de github del proyecto Tienda-Alba, ejecute click sobre el boton Code<>, en el cual procedera a seleccionar download.zip, donde procedera a descargar el proyecto de nuestra pagina
 
-- 1.2 Debemos encontrar la carpeta "xampp" dentro del Disco Local (C) y dentro ubicar la carpeta "htdocs".
+- 1.2 Debemos dirigirnos a nuestro Disco Local (C) en el cual se debe entrar en el siguiente orden de las carpetas xampp>htdocs
 
-- 1.3 Una vez encontrada y acceder a la carpeta htdocs, debemos copiar nuestro proyecto de github y pegarlo dentro de htdocs
+- 1.3 Una vez dentro se debe pegar el archivo zip en esta ultima carpeta y descomprimir el archivo
+
+- 1.4 Una vez hecho esto, iremos a descargar la base de datos llamada "usuarios.sql", la cual fue enviado por correoe de datos llamada "usuarios.sql", la cual fue enviado por correo
+
 
 # Paso 2
 
@@ -68,9 +71,17 @@
 
 - 2.2 Una vez activada la aplicacion "Apache" Podremos dar click al boton "admin", El cual nos abrira una pagina web de xampp, nos dara una pagina con un url "http://localhost/dashboard/" el cual cambiaremos a "http://localhost/"nombre_carpeta_proyecto"/index.html" para que cargue la pagina de nuestro proyecto
 
-- 2.3 Una vez activada la aplicacion "Mysql" Podremos dar click al boton "admin", el cual nos abrira la pagina web de xampp phpmyadmin, nos mostrara las bases de datos de la pagina, con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" para que la pagina funcione correctamente
+- 2.3 Una vez activada la aplicacion "Mysql" Podremos dar click al boton "admin", el cual nos abrira la pagina web de xampp phpmyadmin, nos mostrara las bases de datos de la pagina, 
+tendran que crear una base de datos nueva llamada "usuarios" y dar click en el boton "Crear", con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" en la misma base de datos usuarios, dandole click en la base de datos y elegir la opcion "Importar" y en el apartado de la pagina "Archivo a importar" damos click en "Seleccionar archivo" y buscamos el archivo "usuarios.sql" para que la pagina funcione correctamente
+
+- 2.4 Una vez ya creada la base de datos, si no se muestra en el apartado izquierdo de la pagina, pueden actualizar la pagina, despues de esto seleccionaremos la base datos creada dandole click y habran opciones arriba como por ejemplo "Estructura" , "SQL" , "Buscar", "Generar una Consulta", etc;
+
+- 2.5 Iremos a la opcion "importar" dandole click , con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" en la opcion "Archivo a Importar" , eligiran "usuarios.sql" y lo cargaran, hecho esto van a ir al boton mas abajo de la pagina con el nombre "importar" y daran click para que importe correctamente la base de datos para que la pagina funcione correctamente
+
 
 # Paso 3
+
+- 3.1 registrarse, he iniciar sesion
 
 ## Disfrutar de la pagina mas buena del Mundo !!
 
