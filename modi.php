@@ -126,6 +126,7 @@ if ($facturaId) {
     if ($resultado->num_rows == 1) {
         // Obtiene la fila de resultados como un array asociativo
         $row = $resultado->fetch_assoc();
+        
         echo '
 <div id="ventana55">
   <div class="form-container">
@@ -139,7 +140,7 @@ if ($facturaId) {
             <span id="error-nombreProducto" class="error"></span>
           </div>
           <div class="form-group">
-            <label for="Descripcion_Producto">Descripcion del producto</label>
+            <label for="Descripcion_Producto">Descripción del producto</label>
             <input type="text" class="form-control" id="Descripcion_Producto" name="Descripcion_Producto" placeholder="Introduce la descripción del producto" value="' . htmlspecialchars($row['Descripcion_Producto']) .'">
             <span id="error-descrip" class="error"></span>
           </div>
@@ -156,6 +157,11 @@ if ($facturaId) {
         </div>
         <div id="rightSide">
           <div class="form-group">
+            <label for="rut">Rut Cliente</label>
+            <input type="text" class="form-control" id="rut" name="rut" placeholder="Introduce el Rut" value="' . htmlspecialchars($row['Rut_cliente']) . '">
+            <span id="error-rut" class="error"></span>
+          </div>
+          <div class="form-group">
             <label for="Correo">Correo</label>
             <input type="email" class="form-control" id="Correo" name="Correo" placeholder="Introduce el correo" value="' . htmlspecialchars($row['Correo']) . '">
             <span id="error-correo" class="error"></span>
@@ -166,19 +172,27 @@ if ($facturaId) {
             <span id="error-direc" class="error"></span>
           </div>
           <div class="form-group">
-            <label for="Telefono">Telefono</label>
+            <label for="Telefono">Teléfono</label>
             <input type="tel" class="form-control" id="Telefono" name="Telefono" placeholder="Introduce el teléfono" value="' . htmlspecialchars($row['Telefono']) . '">
             <span id="error-tele" class="error"></span>
           </div>
           <div class="form-group">
             <label for="Pago">Pago</label>
             <select class="form-control" id="Pago" name="Pago">
-            <option value="">Elija una opción:</option>
-            <option value="Presencial" ' . (htmlspecialchars($row['Pago']) == 'Presencial' ? 'selected' : '') . '>Presencial</option>
-            <option value="Transferencia" ' . (htmlspecialchars($row['Pago']) == 'Transferencia' ? 'selected' : '') . '>Transferencia</option>
+              <option value="">Elija una opción:</option>
+              <option value="Presencial" ' . (htmlspecialchars($row['Pago']) == 'Presencial' ? 'selected' : '') . '>Presencial</option>
+              <option value="Transferencia" ' . (htmlspecialchars($row['Pago']) == 'Transferencia' ? 'selected' : '') . '>Transferencia</option>
             </select>
             <span id="error-pago" class="error"></span>
-            </div>
+          </div>
+          <div class="form-group">
+            <label for="Estado">Estado</label>
+            <select class="form-control" id="Estado" name="Estado">
+              <option value="">Elija una opción:</option>
+              <option value="Rectificada" ' . (htmlspecialchars($row['Estado']) == 'Rectificada' ? 'selected' : '') . '>Rectificada</option>
+              <option value="Anulada" ' . (htmlspecialchars($row['Estado']) == 'Anulada' ? 'selected' : '') . '>Anulada</option>
+            </select>
+          </div>
         </div>
       </div>
       <button type="submit" class="btn btn-outline-light" id="btn6">Modificar</button>

@@ -1,3 +1,8 @@
+function obtenerProductosCarrito() {
+  // Convertir el array de productos del carrito a una cadena JSON
+  return JSON.stringify(carrito);
+}
+
 $(document).ready(function() {
   $('form').on('submit', function(e) {
     e.preventDefault();
@@ -10,6 +15,8 @@ $(document).ready(function() {
     var errorcantidad = $('#error-cantidad');
     var precio = $('#precio').val();
     var errorprecio = $('#error-precio');
+    var rut = $.trim($('#rut').val());
+    var errorrut = $('#error-rut');
     var correo = $('#correo').val();
     var errorcorreo = $('#error-correo');
     var direccion = $('#direccion').val();
@@ -20,19 +27,14 @@ $(document).ready(function() {
     var errorpago = $('#error-pago');
 
 
-    if(!nombreProducto) {
-      errorNombreProducto.text("Este campo es obligatorio.");
+    if(rut.length <= 5 || !rut.includes('-')) {
+      errorrut.text("El RUT Invalido debe contener más de 5 caracteres y un guion.");
       return;
     } else {
-      errorNombreProducto.text("");
+      errorrut.text("");
     }
 
-    if(!descripcionProducto) {
-      errordesc.text("Este campo es obligatorio.");
-      return;
-    } else {
-      errordesc.text("");
-    }
+
 
     
 
@@ -53,21 +55,6 @@ $(document).ready(function() {
 
     
 
-    if(cantidad <= 0) {
-      errorcantidad.text("Por favor, introduce una cantidad válida.");
-      return;
-    } else {
-      errorcantidad.text("");
-    }
-
-    
-
-    if(precio <= 0) {
-      errorprecio.text("Por favor, introduce un precio válido.");
-      return;
-    } else {
-      errorprecio.text("");
-    }
 
     if(!/^[0-9]{9}$/.test(telefono)) {
       errortele.text("Por favor, introduce un número de teléfono válido.");
@@ -83,21 +70,22 @@ $(document).ready(function() {
       errorpago.text("");
     }
 
-    if( !nombreProducto || !descripcionProducto || !cantidad || !precio || !correo || !direccion || !telefono || !opciones) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
+    
+    var productosCarrito = obtenerProductosCarrito();
 
     $.ajax({
       type: 'POST',
-      url: 'tienda.php',
-      data: $(this).serialize(),
+      url: 'Pcompra.php',
+      data: $(this).serialize() + "&productosCarrito=" + encodeURIComponent(productosCarrito),
       success: function(response) {
         if(response === 'success') {
           window.location.href = 'factura.php';
         } else {
-          // Aquí puedes manejar los errores devueltos por el servidor
+          alert("Error: " + response); // Mostrar el error devuelto por el servidor
         }
+      },
+      error: function(xhr, status, error) {
+        alert("AJAX error: " + error); // Mostrar error de AJAX
       }
     });
   });

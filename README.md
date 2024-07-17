@@ -56,8 +56,8 @@
 
 # URGENTE!!!
 
-* El proyecto era un poco pesado con lo cual hemos separado algunas cosas (base de datos "usuarios.sql" , Carpeta "VIDEO" el cual contiene un video motivacional) que se pueden descargar desde este drive para complementar el proyecto
-  
+* El proyecto es demasiado pesado ( 1.4 GB ) para subirlo desde git bash , con tal de solucionar este error subimos nuestro proyecto entero en archivo winrar y a un drive con todo el proyecto para descargar si necesita la ultima versión.
+
 * Drive : https://drive.google.com/drive/u/0/folders/1bz2A5fM4kUeqEuiDIfRw4D2HOM5C-zCq
 
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -70,19 +70,13 @@
 
 - 1.3 Una vez encontrada y acceder a la carpeta htdocs, debemos copiar nuestro proyecto de github y pegarlo dentro de htdocs
 
-- 1.4 Una vez hecho esto, iremos a descargar la base de datos llamada "usuarios.sql"
-
 # Paso 2
 
 - 2.1 Despues de Hacer el paso 1, abriremos la aplicación Xampp Control el cual abrira una ventana pequeña con todas las aplicaciones manejables disponibles con lo cual iremos a activar "Apache" con el boton "Start".
 
 - 2.2 Una vez activada la aplicacion "Apache" Podremos dar click al boton "admin", El cual nos abrira una pagina web de xampp, nos dara una pagina con un url "http://localhost/dashboard/" el cual cambiaremos a "http://localhost/"nombre_carpeta_proyecto"/index.html" para que cargue la pagina de nuestro proyecto
 
-- 2.3 Una vez activada la aplicacion "Mysql" Podremos dar click al boton "admin", el cual nos abrira la pagina web de xampp phpmyadmin, nos mostrara las bases de datos de la pagina, tendran que crear una base de datos nueva llamada "usuarios" y dar click en el boton "Crear".
-
-- 2.4 Una vez ya creada la base de datos, si no se muestra en el apartado izquierdo de la pagina, pueden actualizar la pagina, despues de esto seleccionaremos la base datos creada dandole click y habran opciones arriba como por ejemplo "Estructura" , "SQL" , "Buscar", "Generar una Consulta", etc;
-
-- 2.5 Iremos a la opcion "importar" dandole click , con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" en la opcion "Archivo a Importar" , eligiran "usuarios.sql" y lo cargaran, hecho esto van a ir al boton mas abajo de la pagina con el nombre "importar" y daran click para que importe correctamente la base de datos para que la pagina funcione correctamente
+- 2.3 Una vez activada la aplicacion "Mysql" Podremos dar click al boton "admin", el cual nos abrira la pagina web de xampp phpmyadmin, nos mostrara las bases de datos de la pagina, con lo cual iremos a importar la base de datos de nuestra pagina "usuarios.sql" para que la pagina funcione correctamente
 
 # Paso 3
 
