@@ -106,7 +106,11 @@ echo "</div>";
 echo "</div>";
 echo "</div>";
 
-$sql = "SELECT f.ID_Boleta, f.Nombre_Producto, f.Descripcion_Producto, f.Rut_cliente FROM factura f"; // Consulta SQL modificada
+// Consulta para obtener los datos de las facturas y los productos
+$sql = "SELECT f.ID_Boleta, d.Nombre_Producto, f.Rut_cliente, d.Descripcion_Producto
+        FROM factura f 
+        JOIN detalle_factura d ON f.ID_Boleta = d.ID_Boleta 
+        ORDER BY f.ID_Boleta"; // Consulta SQL modificada
 
 $result = $conn->query($sql);
 
@@ -114,56 +118,82 @@ if ($result->num_rows > 0) {
   // Añade estilos para los estados
   echo "<style>.estadoEntregado { color: green; } .estadoRechazado { color: red; }</style>";
 
+  $currentBoleta = null;
+  $productos = [];
+
   while($row = $result->fetch_assoc()) {
-    $sqlEstado = "SELECT EstadoB FROM entrega WHERE ID_Boleta = ?";
-    $stmt = $conn->prepare($sqlEstado);
-    $stmt->bind_param("i", $row["ID_Boleta"]);
-    $stmt->execute();
-    $resultEstado = $stmt->get_result();
-    $rowEstado = $resultEstado->fetch_assoc();
-    $estadoB = $rowEstado ? $rowEstado["EstadoB"] : "No especificado";
-
-    echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
-    echo "<div class='formulario-boletas'>";
-    echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
-    echo "<input type='hidden' name='rut_cliente' value='" . $row["Rut_cliente"] . "'>";
-    $claseColor = ($estadoB == "Entregado") ? "estadoEntregado" : (($estadoB == "Rechazado") ? "estadoRechazado" : "");
-    echo "<label style='margin-right: 20px;' >ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: <span class='" . $claseColor . "'>" . $estadoB . "</span></label>";
-    echo "<label>RUT Cliente: " . $row["Rut_cliente"] . "</label>"; // Mostrar el RUT del cliente
-
-    if ($estadoB == "Rechazado") {
-      echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
-      echo "<option value='' >Elija una opción:</option>";
-      echo "<option value='Entregado'>Entregado</option>";
-      echo "<option value='Rechazado'>Rechazado</option>";
-      echo "</select>";
-      echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
-      echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
-      echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
-      echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
-    } elseif ($estadoB != "Entregado") {
-      echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
-      echo "<option value='' >Elija una opción:</option>";
-      echo "<option value='Entregado'>Entregado</option>";
-      echo "<option value='Rechazado'>Rechazado</option>";
-      echo "</select>";
-      echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
-      echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
-      echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
-      echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
-    } else {
-      echo "<button type='button' class='btn btn-secondary' onclick='visualizarDatosAjax(" . $row["ID_Boleta"] . ")'>Ver Detalles</button>";
+    if ($currentBoleta !== $row["ID_Boleta"]) {
+      if ($currentBoleta !== null) {
+        // Mostrar la boleta anterior
+        mostrarBoleta($currentBoleta, $productos, $conn);
+        $productos = [];
+      }
+      $currentBoleta = $row["ID_Boleta"];
     }
-
-    echo "</div>";
-    echo "</form>";
-
-    $stmt->close();
+    $productos[] = $row;
+  }
+  // Mostrar la última boleta
+  if ($currentBoleta !== null) {
+    mostrarBoleta($currentBoleta, $productos, $conn);
   }
 } else {
   echo "0 resultados";
 }
 $conn->close();
+
+function mostrarBoleta($idBoleta, $productos, $conn) {
+  $sqlEstado = "SELECT EstadoB FROM entrega WHERE ID_Boleta = ?";
+  $stmt = $conn->prepare($sqlEstado);
+  $stmt->bind_param("i", $idBoleta);
+  $stmt->execute();
+  $resultEstado = $stmt->get_result();
+  $rowEstado = $resultEstado->fetch_assoc();
+  $estadoB = $rowEstado ? $rowEstado["EstadoB"] : "No especificado";
+  $stmt->close();
+
+  echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
+  echo "<div class='formulario-boletas'>";
+  echo "<input type='hidden' name='id_boleta' value='" . $idBoleta . "'>";
+  echo "<input type='hidden' name='rut_cliente' value='" . $productos[0]["Rut_cliente"] . "'>";
+  $claseColor = ($estadoB == "Entregado") ? "estadoEntregado" : (($estadoB == "Rechazado") ? "estadoRechazado" : "");
+  echo "<label style='margin-right: 20px;'>ID Boleta: " . $idBoleta . ", Estado: <span class='" . $claseColor . "'>" . $estadoB . "</span></label>";
+  echo "<label style='margin-bottom: 20px;'>RUT Cliente: " . $productos[0]["Rut_cliente"] . "</label>"; // Mostrar el RUT del cliente
+
+  foreach ($productos as $producto) {
+    echo "<p>Producto: " . $producto["Nombre_Producto"] . ", Descripción: " . $producto["Descripcion_Producto"] . "</p>";
+  }
+
+  // Agregar campo para el nombre del cliente cuando el estado es "Entregado"
+  
+
+  if ($estadoB == "Rechazado") {
+    echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+    echo "<option value='' >Elija una opción:</option>";
+    echo "<option value='Entregado'>Entregado</option>";
+    echo "<option value='Rechazado'>Rechazado</option>";
+    echo "</select>";
+    echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+    echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+    echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+    echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+  } elseif ($estadoB != "Entregado") {
+    echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+    echo "<option value='' >Elija una opción:</option>";
+    echo "<option value='Entregado'>Entregado</option>";
+    echo "<option value='Rechazado'>Rechazado</option>";
+    echo "</select>";
+    echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+    echo "<input type='text' class='form-control nombreCliente' name='nombreCliente' placeholder='Nombre del cliente que recibe' style='display:none;'>";
+    echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+    echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+    echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+  } else {
+    echo "<button type='button' class='btn btn-secondary' onclick='visualizarDatosAjax(" . $idBoleta . ")'>Ver Detalles</button>";
+  }
+
+  echo "</div>";
+  echo "</form>";
+}
 ?>
 
 <div id="modalComprobante" class="modal">
@@ -248,14 +278,17 @@ function mostrarCampos(selectElement, formElement) {
   var descripcion = formElement.querySelector('.descripcion');
   var descripcionEntrega = formElement.querySelector('.descripcionEntrega');
   var imagenEntrega = formElement.querySelector('.imagenEntrega');
+  var nombreCliente = formElement.querySelector('.nombreCliente'); // Nuevo campo para el nombre del cliente
 
   if (selectElement.value == 'Entregado') {
     descripcionEntrega.style.display = 'block';
     imagenEntrega.style.display = 'block';
+    nombreCliente.style.display = 'block'; // Mostrar el campo del nombre del cliente
     descripcion.style.display = 'none';
   } else {
     descripcionEntrega.style.display = 'none';
     imagenEntrega.style.display = 'none';
+    nombreCliente.style.display = 'none'; // Ocultar el campo del nombre del cliente
     descripcion.style.display = 'block';
   }
 }

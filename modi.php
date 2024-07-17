@@ -101,14 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($resultado->num_rows == 1) {
             $row = $resultado->fetch_assoc();
-            
-            echo '
-<div id="ventana55">
-  <div class="form-container">
-    <form method="POST" action="update.php" onsubmit="return validarFormulario()">
-      <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($facturaId) . '">
-      <div id="formContainer">';
-      // Segunda consulta para obtener datos de la tabla detalle_factura
+
+
+            // Segunda consulta para obtener datos de la tabla detalle_factura
       $stmtDetalle = $conn->prepare("SELECT * FROM detalle_factura WHERE ID_Boleta = ?");
       $stmtDetalle->bind_param("i", $facturaId);
       $stmtDetalle->execute();
@@ -116,6 +111,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       if ($resultadoDetalle->num_rows > 0) {
           while ($rowDetalle = $resultadoDetalle->fetch_assoc()) {
+            
+            echo '
+<div id="ventana55">
+  <div class="form-container">
+    <form method="POST" action="update.php" onsubmit="return validarFormulario()">
+      <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($facturaId) . '">
+      <div id="formContainer">';
+
+      
+// Asegúrate de incluir el ID_Detalle como un campo oculto en el formulario
+echo '<input type="hidden" name="ID_Detalle" value="' . htmlspecialchars($rowDetalle['ID_Detalle']) . '">';
+
 
         echo '<div id="leftSide">
           <div class="form-group">
@@ -198,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
     <script src="JS/loader.js"></script>
+
 
   </div>
 </body>
