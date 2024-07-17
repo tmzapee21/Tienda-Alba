@@ -142,7 +142,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     xhr.onreadystatechange = function() {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             if (this.responseText === "success") {
-                window.location.href = "tienda.php";
+                window.location.href = "factura.php";
             } else {
                 alert("Correo electrónico o contraseña incorrectos");
             }

@@ -46,7 +46,7 @@ session_start();
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">TIENDA</a>
+              <a class="nav-link" href="tienda.php">NUEVA BOLETA</a>
             </li>
 
             <li class="nav-item">
@@ -97,109 +97,128 @@ $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':usuario', $_SESSION['username']);
 $stmt->execute();
 
-
-
-
 while ($row = $stmt->fetch())
 {
+    // Determina el color según el estado de la factura
+    $colorTextoEstado = '';
+    switch ($row['Estado']) {
+        case 'Anulada':
+            $colorTextoEstado = 'color: red;';
+            break;
+        case 'Rectificado':
+            $colorTextoEstado = 'color: orange;';
+            break;
+        case 'Creado':
+            $colorTextoEstado = 'color: yellow;';
+            break;
+        // Agrega más casos según sea necesario
+    }
 
-// Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
-$subtotal = $row['Precio'] * $row['Cantidad'];
-$IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
-$total = $subtotal + $IVA;
+    // Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
+    $subtotal = $row['Precio'] * $row['Cantidad'];
+    $IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
+    $total = $subtotal + $IVA;
 
-echo '<div id="boletas2">
-<div class="container">
-    <p>
-        <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
-            <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . ' - ' . $row['Estado'] . '
+    // Inicia el contenedor de la boleta
+    echo '<div style="position: relative; width: 100%;">';
+
+    // Mostrar la marca de agua si el estado es "Anulada"
+    if ($row['Estado'] == 'Anulada') {
+      echo '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: red; opacity: 0.5; z-index: 1000;">
+              ANULADA
+            </div>';
+    }
+
+    echo '<div id="boletas2">
+    <div class="container">
+        <p>
+            <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
+        <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . ' - <span style="' . $colorTextoEstado . '">' . $row['Estado'] . '</span>
+      </a>
             
+            
+            <form action="modi.php" method="POST">
+        <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($row['ID_Boleta']) . '">
+        <button type="submit" class="modi">Modificar</button>
+    </form>
+            <button id="descargar' . $row['ID_Boleta'] . '" class="pdf" >PDF</button>
+        </p>
           
-        </a>
-        
-        
-        <form action="modi.php" method="POST">
-    <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($row['ID_Boleta']) . '">
-    <button type="submit" class="modi">Modificar</button>
-</form>
-        <button id="descargar' . $row['ID_Boleta'] . '" class="pdf" >PDF</button>
-    </p>
-      
-        <div id="facturaCollapse' . $row['ID_Boleta'] . '" class="collapse">
-          <div class="card card-body" id="titulo5">
-              
-              <div class="logo-y-titulo">  
-                  <img src="IMG/Colo_a.png" alt="Logo" height="80" class="logo">
-                  <h2> ORDEN DE COMPRA </h2>
+            <div id="facturaCollapse' . $row['ID_Boleta'] . '" class="collapse">
+              <div class="card card-body" id="titulo5">
                   
-              </div>
-              <div class="logo-y-titulo2">
-              <div id="empresa">
-                <h3 id="empre">Nº ORDEN DE COMPRA: </h3>
-                <p>' . $row['ID_Boleta'] . '</p>
-              </div>
-                <div id="empresa">
-                    <h3 id="empre">EMPRESA: </h3>
-                    <p>' . $row['Nombre_Empresa'] . '</p>
+                  <div class="logo-y-titulo">  
+                      <img src="IMG/Colo_a.png" alt="Logo" height="80" class="logo">
+                      <h2> ORDEN DE COMPRA </h2>
+                      
+                  </div>
+                  <div class="logo-y-titulo2">
+                  <div id="empresa">
+                    <h3 id="empre">Nº ORDEN DE COMPRA: </h3>
+                    <p>' . $row['ID_Boleta'] . '</p>
+                  </div>
+                    <div id="empresa">
+                        <h3 id="empre">EMPRESA: </h3>
+                        <p>' . $row['Nombre_Empresa'] . '</p>
+                    </div>
+                    
+                    <div class="container3">
+                    <div class="cp2" >
+                      <h3 id="empre4">DE: </h3>
+                      <p>' . $_SESSION['username'] . '</p>
+                      <p>' . $_SESSION['correo'] . '</p>
+                      <p>' . $_SESSION['rut'] . '</p>
+                      
+                    </div>
+                  
+                <div class="cp3" >
+                  <div class="text-container">
+
+                  <h3 id="empre4">COBRAR A: </h3>
+                  <p>' . $row['usuario'] . '</p>
+                  <p>' . $row['Correo'] . '</p>
+                  <p>' . $row['Telefono'] . '</p>
+                  <p>' . $row['Direccion'] . '</p>
+                  </div>
+                </div>
+
                 </div>
                 
-                <div class="container3">
-                <div class="cp2" >
-                  <h3 id="empre4">DE: </h3>
-                  <p>' . $_SESSION['username'] . '</p>
-                  <p>' . $_SESSION['correo'] . '</p>
-                  <p>' . $_SESSION['rut'] . '</p>
-                  
+                <div class="cp4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Nombre del producto</th>
+                                <th>Descripción del producto</th>
+                                <th>Cantidad</th>
+                                <th>Forma de pago</th>
+                                <th>Subtotal</th>
+                                <th>IVA</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>' . $row['Nombre_Empresa'] . '</td>
+                                <td>' . $row['Nombre_Producto'] . '</td>
+                                <td>' . $row['Descripcion_Producto'] . '</td>
+                                <td>' . $row['Cantidad'] . '</td>
+                                <td>' . $row['Pago'] . '</td>
+                                <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
+                                <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
+                                <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-              
-            <div class="cp3" >
-              <div class="text-container">
 
-              <h3 id="empre4">COBRAR A: </h3>
-              <p>' . $row['usuario'] . '</p>
-              <p>' . $row['Correo'] . '</p>
-              <p>' . $row['Telefono'] . '</p>
-              <p>' . $row['Direccion'] . '</p>
-              </div>
-            </div>
-
-            </div>
-            
-            <div class="cp4">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Empresa</th>
-                            <th>Nombre del producto</th>
-                            <th>Descripción del producto</th>
-                            <th>Cantidad</th>
-                            <th>Forma de pago</th>
-                            <th>Subtotal</th>
-                            <th>IVA</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>' . $row['Nombre_Empresa'] . '</td>
-                            <td>' . $row['Nombre_Producto'] . '</td>
-                            <td>' . $row['Descripcion_Producto'] . '</td>
-                            <td>' . $row['Cantidad'] . '</td>
-                            <td>' . $row['Pago'] . '</td>
-                            <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
-                            <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
-                            <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-              
+                  
+                  </div>
               </div>
           </div>
-      </div>
-    
-  </div>';
+        
+      </div>';
 }
 ?>
 
@@ -218,6 +237,8 @@ echo '<div id="boletas2">
 
 
   </div>
+
+
 
   <script>
 document.querySelectorAll('.modi').forEach(button => {

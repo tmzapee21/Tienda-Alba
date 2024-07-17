@@ -116,3 +116,19 @@ input.form-control.descripcion {
     margin-top: 0; /* Elimina el margen superior por defecto del h1 */
     padding-top: 0; /* Asegura que no haya espacio extra en la parte superior */
   }
+
+  /* CSS para el modal */
+.modal-content {
+  background-color: #f8f9fa; /* Color de fondo */
+  border-radius: 15px; /* Bordes redondeados */
+  border: 2px solid #007bff; /* Borde sólido con color */
+}
+
+.modal-header, .modal-footer {
+  background-color: #007bff; /* Color de fondo para el encabezado y pie de página */
+  color: white; /* Color de texto */
+}
+
+.modal-title {
+  color: #fff; /* Color del título */
+}

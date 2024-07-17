@@ -301,7 +301,17 @@ body {
     margin-bottom: 10px;
     border: 1px solid #ffcc00;
     border-radius: 25px;
+    margin-top: 20px;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+
 }
+
+
+
+
 
 
 #ventana55 { /* o el selector del elemento padre de .form-container */
@@ -324,3 +334,89 @@ body {
     margin-top: 10px;
     color: red;
   }
+
+
+
+
+
+
+
+/*
+
+Prueba Numero 1
+
+*/
+
+#ventanaEmergente {
+    display: none; /*Ocultar inicialmente */
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    z-index: 1000;
+    border: 2px solid black;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+
+
+  #ventana65 {
+    background-color: black;
+    
+    border: 1px solid #ffcc00;
+    border-radius: 25px;
+    padding: 20px;
+    color: white;
+    margin: 40px auto; /* Centrar la tabla */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+}
+  
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin-top: 20px; /* Espacio arriba de la tabla */
+  }
+  
+  .table th, .table td {
+    text-align: left;
+    padding: 12px; /* Más espacio dentro de las celdas */
+    border-bottom: 1px solid #ccc; /* Línea más suave */
+  }
+  
+  .table th {
+    background-color: #007bff; /* Color de fondo para los encabezados */
+    color: white; /* Texto blanco para los encabezados */
+    border-top-left-radius: 8px; /* Redondear esquinas superiores izquierdas del encabezado */
+    border-top-right-radius: 8px; /* Redondear esquinas superiores derechas del encabezado */
+  }
+  
+  .table td {
+    background-color: #ffffff; /* Fondo blanco para las celdas */
+  }
+  
+  .table-responsive {
+    overflow-x: auto; /* Asegura que la tabla sea desplazable horizontalmente en pantallas pequeñas */
+  }
+  
+  /* Estilos específicos para el pie de página de la tabla */
+  .table tfoot td {
+    font-weight: bold; /* Texto más grueso para el subtotal, IVA y total */
+    background-color: #007bff; /* Fondo azul para las celdas del pie de página */
+    color: white; /* Texto blanco para el pie de página */
+    border-bottom: none; /* Sin borde inferior para las celdas del pie de página */
+  }
+
+
+  
+  .btn-eliminar {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ff4d4d;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}

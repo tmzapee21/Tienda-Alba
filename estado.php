@@ -1,11 +1,6 @@
 <?php
 session_start();
-
-
-
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -17,7 +12,7 @@ session_start();
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Factura</title>
@@ -45,34 +40,28 @@ session_start();
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">TIENDA</a>
+              <a class="nav-link" href="tienda.php">NUEVA BOLETA</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link" href="factura.php">BOLETAS</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link" href="estado.php">CONFIRMACIONES</a>
             </li>
-
+            <li class="nav-item">
+              <a class="nav-link" href="rechazados.php">BOLETAS RECHAZADAS</a>
+            </li>
           </ul>
-          
           <div id="UsuarioNew">
-
             <?php
-    echo "<span class='UsuarioNew'>Bienvenido, " . $_SESSION['username'] . "</span>";
-    ?>
+              echo "<span class='UsuarioNew'>Bienvenido, " . $_SESSION['username'] . "</span>";
+            ?>
             <button onclick="location.href='cerrar.php'" class="btn btn-outline-light">CERRAR SESIÓN</button>
-          </div>
-          <div class="navbar-text">
           </div>
         </div>
       </div>
     </nav>
-
 
     <div>
     <div>
@@ -80,84 +69,117 @@ session_start();
     <?php
 include 'db.php'; // Asegúrate de tener este archivo para la conexión a la base de datos
 
-$sql = "SELECT ID_Boleta, Nombre_Producto, Descripcion_Producto FROM factura"; // Ajusta los nombres de las columnas y la tabla según tu base de datos
+// Consulta para contar los diferentes estados de las facturas
+$sqlCount = "SELECT EstadoB, COUNT(*) as count FROM entrega WHERE EstadoB IN ('Entregado', 'Rechazado') GROUP BY EstadoB";
+$resultCount = $conn->query($sqlCount);
+
+$estadoCounts = [
+    "Entregado" => 0,
+    "Rechazado" => 0
+];
+
+while ($rowCount = $resultCount->fetch_assoc()) {
+    $estadoCounts[$rowCount['EstadoB']] = $rowCount['count'];
+}
+
+// Mostrar los contadores en la parte superior
+echo "<div class='container my-4'>";
+echo "<div class='row'>";
+echo "<div class='col-md-6'>";
+echo "<div class='card text-white bg-success mb-3'>";
+echo "<div class='card-header'>Entregado</div>";
+echo "<div class='card-body'>";
+echo "<h5 class='card-title'>" . $estadoCounts['Entregado'] . "</h5>";
+echo "</div>";
+echo "</div>";
+echo "</div>";
+
+echo "<div class='col-md-6'>";
+echo "<div class='card text-white bg-danger mb-3'>";
+echo "<div class='card-header'>Rechazado</div>";
+echo "<div class='card-body'>";
+echo "<h5 class='card-title'>" . $estadoCounts['Rechazado'] . "</h5>";
+echo "</div>";
+echo "</div>";
+echo "</div>";
+
+echo "</div>";
+echo "</div>";
+
+$sql = "SELECT f.ID_Boleta, f.Nombre_Producto, f.Descripcion_Producto, f.Rut_cliente FROM factura f"; // Consulta SQL modificada
 
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    
-  // Iterar sobre cada fila de resultados
+  // Añade estilos para los estados
+  echo "<style>.estadoEntregado { color: green; } .estadoRechazado { color: red; }</style>";
+
   while($row = $result->fetch_assoc()) {
-    // Consulta para obtener EstadoB para la ID_Boleta actual
     $sqlEstado = "SELECT EstadoB FROM entrega WHERE ID_Boleta = ?";
     $stmt = $conn->prepare($sqlEstado);
     $stmt->bind_param("i", $row["ID_Boleta"]);
     $stmt->execute();
     $resultEstado = $stmt->get_result();
     $rowEstado = $resultEstado->fetch_assoc();
-    $estadoB = $rowEstado ? $rowEstado["EstadoB"] : "No especificado"; // Asegúrate de manejar el caso de que no haya un EstadoB
+    $estadoB = $rowEstado ? $rowEstado["EstadoB"] : "No especificado";
 
-    // Inicio del formulario para cada boleta
-    // Asegúrate de que cada formulario tenga una clase única para los campos y ajusta el script de JavaScript correspondientemente.
     echo "<form class='formularioBoletas' action='update2.php' method='post' enctype='multipart/form-data'>";
     echo "<div class='formulario-boletas'>";
     echo "<input type='hidden' name='id_boleta' value='" . $row["ID_Boleta"] . "'>";
-    echo "<label>ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: " . $estadoB . "</label>";
-    // Condición para mostrar el botón solo si el estado es "Entregado"
-    if ($estadoB == "Entregado") {
-      echo "<button type='button' onclick='visualizarDatosAjax(" . $row["ID_Boleta"] . ")'>Visualizar</button>";
-  }
-    echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
-    echo "<option value=''>Elija una opción:</option>";
-    echo "<option value='Entregado'>Entregado</option>";
-    echo "<option value='Rechazado'>Rechazado</option>";
-    echo "</select>";
-    echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
-    echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
-    echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
-    echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+    echo "<input type='hidden' name='rut_cliente' value='" . $row["Rut_cliente"] . "'>";
+    $claseColor = ($estadoB == "Entregado") ? "estadoEntregado" : (($estadoB == "Rechazado") ? "estadoRechazado" : "");
+    echo "<label style='margin-right: 20px;' >ID Boleta: " . $row["ID_Boleta"] . ", Producto: " . $row["Nombre_Producto"] . ", Descripción: " . $row["Descripcion_Producto"] . ", Estado: <span class='" . $claseColor . "'>" . $estadoB . "</span></label>";
+    echo "<label>RUT Cliente: " . $row["Rut_cliente"] . "</label>"; // Mostrar el RUT del cliente
+
+    if ($estadoB == "Rechazado") {
+      echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+      echo "<option value='' >Elija una opción:</option>";
+      echo "<option value='Entregado'>Entregado</option>";
+      echo "<option value='Rechazado'>Rechazado</option>";
+      echo "</select>";
+      echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+      echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+      echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+      echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+    } elseif ($estadoB != "Entregado") {
+      echo "<select class='form-control opciones' name='estado' onchange='mostrarCampos(this, this.closest(\".formularioBoletas\"))'>";
+      echo "<option value='' >Elija una opción:</option>";
+      echo "<option value='Entregado'>Entregado</option>";
+      echo "<option value='Rechazado'>Rechazado</option>";
+      echo "</select>";
+      echo "<input type='text' class='form-control descripcion' name='descripcion' placeholder='Descripción del rechazo' style='display:none;'>";
+      echo "<input type='text' class='form-control descripcionEntrega' name='descripcionEntrega' placeholder='Descripción de la entrega' style='display:none;'>";
+      echo "<input type='file' class='form-control imagenEntrega' name='imagenEntrega' style='display:none;'>";
+      echo "<button type='submit' class='btn btn-primary'>Confirmar Cambio</button>";
+    } else {
+      echo "<button type='button' class='btn btn-secondary' onclick='visualizarDatosAjax(" . $row["ID_Boleta"] . ")'>Ver Detalles</button>";
+    }
+
     echo "</div>";
     echo "</form>";
+
+    $stmt->close();
   }
-    
 } else {
   echo "0 resultados";
 }
 $conn->close();
 ?>
 
-
-
-
-
 <div id="modalComprobante" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h1>COMPROBANTE</h1>
     <div class="contenido-modal">
-      <div class="informacion">
-      
-      </div>
+      <div class="informacion"></div>
       <div class="comprobante">
-        <!-- Aquí puedes insertar el comprobante, por ejemplo, una imagen o un PDF -->
         <p>Comprobante aquí</p>
       </div>
+    </div>
   </div>
 </div>
 
-
-
-    
-
-    </div>
-    </div>
-
-
-
-
-
-
-    <script>
+<script>
 function visualizarDatosAjax(idBoleta) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -166,7 +188,6 @@ function visualizarDatosAjax(idBoleta) {
       var modal = document.getElementById("modalComprobante");
       modal.style.display = "block";
 
-      // Mover la asignación del evento del botón de cerrar aquí
       var span = document.getElementsByClassName("close")[0];
       if (span) {
         span.addEventListener('click', function() {
@@ -181,7 +202,6 @@ function visualizarDatosAjax(idBoleta) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Manejar el cierre del modal al hacer clic fuera de él
   var modal = document.getElementById("modalComprobante");
   window.addEventListener('click', function(event) {
     if (event.target == modal) {
@@ -189,20 +209,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-</script>
 
-<script>
-  
-  document.addEventListener('DOMContentLoaded', function() {
-  // Aplica el evento submit a todos los formularios de boletas
+document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.formularioBoletas').forEach(function(form) {
     form.addEventListener('submit', function(event) {
-      var estadoSeleccionado = form.querySelector('.opciones').value; // Asume que hay un select con clase 'opciones' que contiene el estado
+      var estadoSeleccionado = form.querySelector('.opciones').value;
 
-      // Solo realiza esta validación si el estado es 'Entregado'
       if (estadoSeleccionado === 'Entregado') {
         var descripcionEntrega = form.querySelector('.descripcionEntrega').value.trim();
         var imagenEntrega = form.querySelector('.imagenEntrega').value;
+        var rutCliente = form.querySelector('input[name="rut_cliente"]').value.trim();
 
         if (!descripcionEntrega) {
           alert('Por favor, ingrese una descripción de entrega.');
@@ -215,9 +231,14 @@ document.addEventListener('DOMContentLoaded', function() {
           event.preventDefault();
           return false;
         }
+
+        if (!rutCliente) {
+          alert('No se encontró el Rut del cliente.');
+          event.preventDefault();
+          return false;
+        }
       }
 
-      // Continúa con otras validaciones aquí si es necesario
       return true;
     });
   });
@@ -235,65 +256,26 @@ function mostrarCampos(selectElement, formElement) {
   } else {
     descripcionEntrega.style.display = 'none';
     imagenEntrega.style.display = 'none';
-    descripcion.style.display = 'block'; // Asegúrate de mostrar este campo si es necesario
+    descripcion.style.display = 'block';
   }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const selects = document.querySelectorAll('.opciones');
+  selects.forEach(select => {
+    select.addEventListener('change', function () {
+      const descripcion = this.nextElementSibling;
+      if (this.value === 'Rechazado') {
+        descripcion.style.display = 'block';
+      } else {
+        descripcion.style.display = 'none';
+      }
+    });
+  });
+});
 </script>
-
-    <script>
-      // Selecciona todos los formularios con la clase 'formularioBoletas' en lugar de un ID único
-      document.querySelectorAll('.formularioBoletas').forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-          var estados = form.querySelectorAll('.opciones');
-          var descripciones = form.querySelectorAll('.descripcion');
-          var formValido = true;
-
-          estados.forEach(function(estado, index) {
-              // Verifica si no se ha seleccionado una opción
-              if (estado.value === '') {
-                  alert('Debe elegir una opción para cada boleta.');
-                  estado.focus(); // Coloca el foco en el select que no tiene una opción elegida
-                  formValido = false;
-                  return false; // Sale del bucle actual
-              }
-
-              // Aplica la validación de descripción solo para rechazos
-              if (estado.value === 'Rechazado' && descripciones[index].value.trim() === '') {
-                  alert('Debe proporcionar una descripción para los rechazos.');
-                  descripciones[index].style.display = 'block'; // Asegúrate de que el campo de descripción sea visible
-                  descripciones[index].focus(); // Coloca el foco en el campo de descripción vacío
-                  formValido = false;
-              }
-          });
-
-          if (!formValido) {
-              event.preventDefault(); // Detiene el envío del formulario
-          }
-        });
-      });
-</script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const selects = document.querySelectorAll('.opciones');
-
-        selects.forEach(select => {
-          select.addEventListener('change', function () {
-            const descripcion = this.nextElementSibling; // Asume que el input de descripción es el siguiente elemento
-            if (this.value === 'Rechazado') {
-              descripcion.style.display = 'block';
-            } else {
-              descripcion.style.display = 'none';
-            }
-          });
-        });
-      });
-    </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="JS/loader.js"></script>
 
-
-
-    </body>
-    </html>
+</body>
+</html>

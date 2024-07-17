@@ -1,90 +1,43 @@
 <?php
 session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "usuarios";
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar conexión
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include 'db.php'; // Asegúrate de tener el archivo db.php con la conexión a la base de datos
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Recoger los datos del formulario
-  $nombreProducto = $_POST['nombreProducto'] ?? '';
-  $descripcionProducto = $_POST['descripcionProducto'] ?? '';
-  $cantidad = $_POST['cantidad'] ?? '';
-  $precio = $_POST['precio'] ?? '';
-  $correo = $_POST['correo'] ?? '';
-  $direccion = $_POST['direccion'] ?? '';
-  $telefono = $_POST['telefono'] ?? '';
-  $opciones = $_POST['opciones'] ?? '';
-  $usuario = $_SESSION['username'];
+    // Capturar los datos del formulario
+    $nombreProducto = $_POST['nombreProducto'];
+    $descripcionProducto = $_POST['descripcionProducto'];
+    $cantidad = $_POST['cantidad'];
+    $precio = $_POST['precio'];
+    $rut = $_POST['rut'];
+    $correo = $_POST['correo'];
+    $direccion = $_POST['direccion'];
+    $telefono = $_POST['telefono'];
+    $pago = $_POST['opciones'];
 
-  // Nombre de la empresa fijo
-  $nombreEmpresa = "Tienda Alba";
-  $estadoBoleta = "Por Entregar";
-  $estado = "Recien Creada";
-  
+    // Insertar datos en la tabla factura
+    $sql_insert_factura = "INSERT INTO factura (Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Rut_cliente, Correo_cliente, Direccion_cliente, Telefono_cliente, Pago)
+                           VALUES ('$nombreProducto', '$descripcionProducto', $cantidad, $precio, '$rut', '$correo', '$direccion', '$telefono', '$pago')";
 
-  // Insertar los datos en la tabla
-  $sql = "INSERT INTO factura (Nombre_Empresa, Nombre_Producto, Descripcion_Producto, Cantidad, Precio, Correo, Direccion, Telefono, Pago, usuario, Estado, EstadoB)
-VALUES ('$nombreEmpresa', '$nombreProducto', '$descripcionProducto', '$cantidad', '$precio', '$correo', '$direccion', '$telefono', '$opciones', '$usuario','$estado', '$estadoBoleta')";
+    if ($conn->query($sql_insert_factura) === TRUE) {
+        // Obtener el ID_Boleta generado
+        $id_boleta = $conn->insert_id;
 
+        // Insertar una fila en la tabla entrega con el ID_Boleta
+        $sql_insert_entrega = "INSERT INTO entrega (ID_Boleta) VALUES ($id_boleta)";
 
-// Validar los campos aquí
-if(empty($nombreProducto) || empty($descripcionProducto) || empty($cantidad) || empty($precio) || empty($correo) || empty($direccion) || empty($telefono) || empty($opciones)) {
-  echo "Todos los campos son obligatorios.";
-  return;
-}
+        if ($conn->query($sql_insert_entrega) === TRUE) {
+            echo "Boleta creada correctamente. ID Boleta: " . $id_boleta;
+        } else {
+            echo "Error al insertar en la tabla entrega: " . $conn->error;
+        }
+    } else {
+        echo "Error al insertar en la tabla factura: " . $conn->error;
+    }
 
-if(!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-  echo "Por favor, introduce un correo válido.";
-  return;
-}
-
-if(!preg_match("/^[0-9]{9}$/", $telefono)) {
-  echo "Por favor, introduce un número de teléfono válido.";
-  return;
-}
-
-if($cantidad <= 0) {
-  echo "La cantidad debe ser mayor que cero.";
-  return;
-}
-
-if($precio <= 0) {
-  echo "El precio debe ser mayor que cero.";
-  return;
-}
-
-
-
-// Ejecutar la consulta SQL y redirigir
-if ($conn->query($sql) === TRUE) {
-
-      
-
-
-  // Redirigir a factura.php
-  echo 'success';
-  return;
-} else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-
-
-
-
-
+    $conn->close();
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -94,6 +47,7 @@ if ($conn->query($sql) === TRUE) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="CSS/tienda.css">
+  <link rel="stylesheet" href="CSS/tienda2.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -130,7 +84,7 @@ if ($conn->query($sql) === TRUE) {
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li class="nav-item">
-              <a class="nav-link" href="tienda.php">TIENDA</a>
+              <a class="nav-link" href="tienda.php">NUEVA BOLETA</a>
             </li>
 
             <li class="nav-item">
@@ -156,25 +110,20 @@ if ($conn->query($sql) === TRUE) {
       </div>
     </nav>
 
-
-    <div id="videoCarousel" class="carousel slide custom-carousel" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <video class="d-block w-100" autoplay loop muted>
-            <source src="VIDEO/Colo.mp4" type="video/mp4">
-            Tu navegador no soporta la reproducción de video.
-          </video>
-        </div>
-      </div>
-    </div>
-
     <!-- Inputs Productos-->
 
+    <div id="contenedorPrincipal">
+    
+    <div id="contenedorCSS">
+
+
 <!-- Inputs Productos-->
+
 <div id="ventana55">
   <div class="form-container">
   <form method="post" action="tienda.php" onsubmit="return validarFormulario()">
-        <div id="formContainer">
+        <div id="formContainer" style="display: flex;">
+
           <div id="leftSide">
             <div class="form-group">
               <label for="nombreProducto">Nombre de Producto</label>
@@ -197,21 +146,30 @@ if ($conn->query($sql) === TRUE) {
                 <input type="number" class="form-control" id="precio" name="precio" placeholder="Introduce el precio">
                 <span id="error-precio" class="error"></span>
             </div>
+            <div class="form-group">
+  <!-- Botón para agregar producto al carrito -->
+  <button type="button" onclick="agregarProductoAlCarrito()">Agregar al Carrito</button>
+</div>
           </div>
 
           <div id="rightSide">
+          <div class="form-group">
+              <label for="rut">Rut Cliente</label>
+              <input type="rut" class="form-control" id="rut" name="rut" placeholder="Introduce el Rut">
+              <span id="error-rut" class="error"></span>
+            </div>
             <div class="form-group">
-              <label for="correo">Correo</label>
+              <label for="correo">Correo Cliente</label>
               <input type="email" class="form-control" id="correo" name="correo" placeholder="Introduce el correo">
               <span id="error-correo" class="error"></span>
             </div>
             <div class="form-group">
-              <label for="direccion">Dirección</label>
+              <label for="direccion">Dirección Cliente</label>
               <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Introduce la dirección">
               <span id="error-direc" class="error"></span>
             </div>
             <div class="form-group">
-              <label for="telefono">Telefono</label>
+              <label for="telefono">Telefono Cliente</label>
               <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Introduce el teléfono">
               <span id="error-tele" class="error"></span>
             </div>
@@ -225,11 +183,79 @@ if ($conn->query($sql) === TRUE) {
                 <span id="error-pago" class="error"></span>
             </div>
           </div>
+
         </div>
-        <button type="submit" class="btn btn-outline-light" id="btn6">Comprar</button>
-      </form>
+
+        <!-- Tabla Prueba -->
+
+        <div id="caca">
+  <div id="ventana65">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre de Producto</th>
+            <th>Descripcion del Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Aquí se añadirían las filas de productos dinámicamente -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">Subtotal</td>
+            <td id="subtotal">0</td>
+          </tr>
+          <tr>
+            <td colspan="3">IVA (19%)</td>
+            <td id="iva">0</td>
+          </tr>
+          <tr>
+            <td colspan="3">Total</td>
+            <td id="total">0</td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
+</div>
+        <!-- Carrito de Compras -->
+         
+    
+        
+        <button type="submit" class="btn btn-outline-light" id="btn6">Comprar</button>
+      </form>
+
+      </div>
+    </div>
+
+
+    
+
+
+
+    <!-- Tabla Prueba -->
+
+    
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -248,14 +274,14 @@ if ($conn->query($sql) === TRUE) {
     </audio>
 
   </div>
-  <script>
-    window.addEventListener('beforeunload', function (e) {
-  if (!validarFormulario()) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
-});
-  </script>
+
+
+
+
+
+
+
+  <script src="JS/newproduct.js"></script>
   
   <script src="JS/validaciones.js"></script>
   <script src="JS/musica.js"></script>
