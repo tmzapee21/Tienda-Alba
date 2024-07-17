@@ -63,7 +63,7 @@
 
 - 1.3 Una vez dentro se debe pegar el archivo zip en esta ultima carpeta y descomprimir el archivo
 
-- 1.4 Una vez hecho esto, iremos a descargar la base de datos llamada "usuarios.sql", la cual fue enviado por correoe de datos llamada "usuarios.sql", la cual fue enviado por correo
+- 1.4 Una vez hecho esto, iremos a separar los datos ya que la base de datos "usuarios.sql" esta dentro del proyecto
 
 
 # Paso 2
