@@ -6,22 +6,16 @@ $username = "root";
 $password = "";
 $dbname = "usuarios";
 
-// Verificar si la solicitud es POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['ID_Boleta'])) {
         $facturaId = filter_var($_POST['ID_Boleta'], FILTER_SANITIZE_NUMBER_INT);
 
-        // Verifica que el ID es válido
         if (filter_var($facturaId, FILTER_VALIDATE_INT)) {
-            // Conexión a la base de datos
             $conn = new mysqli($servername, $username, $password, $dbname);
 
-            // Verificar conexión
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
             }
-
-            
         } else {
             echo "ID de factura inválido.";
         }
@@ -29,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "ID de factura no proporcionado.";
     }
 } else {
-    // Manejar otros métodos de solicitud o mostrar un mensaje de error
     echo "Método de solicitud no permitido";
 }
 ?>
@@ -44,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Factura</title>
@@ -72,86 +65,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
             <li class="nav-item">
               <a class="nav-link" href="tienda.php">TIENDA</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link" href="factura.php">BOLETAS</a>
             </li>
-
-
           </ul>
           
           <div id="UsuarioNew">
-
             <?php
-    echo "<span class='UsuarioNew'>Bienvenido, " . $_SESSION['username'] . "</span>";
-    ?>
+              echo "<span class='UsuarioNew'>Bienvenido, " . $_SESSION['username'] . "</span>";
+            ?>
             <button onclick="location.href='cerrar.php'" class="btn btn-outline-light">CERRAR SESIÓN</button>
           </div>
-          <div class="navbar-text">
-          </div>
+          <div class="navbar-text"></div>
         </div>
       </div>
     </nav>
 
-
-
     <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "usuarios";
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $facturaId = isset($_POST['ID_Boleta']) ? $_POST['ID_Boleta'] : null;
 
-$facturaId = isset($_POST['ID_Boleta']) ? $_POST['ID_Boleta'] : null;
+    if ($facturaId) {
+        $stmt = $conn->prepare("SELECT * FROM factura WHERE ID_Boleta = ?");
+        $stmt->bind_param("i", $facturaId);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
 
-if ($facturaId) {
-    // Preparar la consulta SQL para seleccionar la boleta por su ID
-    $stmt = $conn->prepare("SELECT * FROM factura WHERE ID_Boleta = ?");
-    $stmt->bind_param("i", $facturaId); // "i" indica que el parámetro es un entero
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-
-    // Verifica si la consulta devuelve filas
-    if ($resultado->num_rows == 1) {
-        // Obtiene la fila de resultados como un array asociativo
-        $row = $resultado->fetch_assoc();
-        
-        echo '
+        if ($resultado->num_rows == 1) {
+            $row = $resultado->fetch_assoc();
+            
+            echo '
 <div id="ventana55">
   <div class="form-container">
     <form method="POST" action="update.php" onsubmit="return validarFormulario()">
       <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($facturaId) . '">
-      <div id="formContainer">
-        <div id="leftSide">
+      <div id="formContainer">';
+      // Segunda consulta para obtener datos de la tabla detalle_factura
+      $stmtDetalle = $conn->prepare("SELECT * FROM detalle_factura WHERE ID_Boleta = ?");
+      $stmtDetalle->bind_param("i", $facturaId);
+      $stmtDetalle->execute();
+      $resultadoDetalle = $stmtDetalle->get_result();
+
+      if ($resultadoDetalle->num_rows > 0) {
+          while ($rowDetalle = $resultadoDetalle->fetch_assoc()) {
+
+        echo '<div id="leftSide">
           <div class="form-group">
             <label for="Nombre_Producto">Nombre de Producto</label>
-            <input type="text" class="form-control" id="Nombre_Producto" name="Nombre_Producto" placeholder="Introduce el nombre del producto" value="' . htmlspecialchars($row['Nombre_Producto']) . '">
+            <input type="text" class="form-control" id="Nombre_Producto" name="Nombre_Producto" placeholder="Introduce el nombre del producto" value="' . htmlspecialchars($rowDetalle['Nombre_Producto']) . '">
             <span id="error-nombreProducto" class="error"></span>
           </div>
           <div class="form-group">
             <label for="Descripcion_Producto">Descripción del producto</label>
-            <input type="text" class="form-control" id="Descripcion_Producto" name="Descripcion_Producto" placeholder="Introduce la descripción del producto" value="' . htmlspecialchars($row['Descripcion_Producto']) .'">
+            <input type="text" class="form-control" id="Descripcion_Producto" name="Descripcion_Producto" placeholder="Introduce la descripción del producto" value="' . htmlspecialchars($rowDetalle['Descripcion_Producto']) .'">
             <span id="error-descrip" class="error"></span>
           </div>
           <div class="form-group">
             <label for="Cantidad">Cantidad</label>
-            <input type="number" class="form-control" id="Cantidad" name="Cantidad" placeholder="Introduce la cantidad" value="' . htmlspecialchars($row['Cantidad']) . '">
+            <input type="number" class="form-control" id="Cantidad" name="Cantidad" placeholder="Introduce la cantidad" value="' . htmlspecialchars($rowDetalle['Cantidad']) . '">
             <span id="error-cantidad" class="error"></span>
           </div>
           <div class="form-group">
             <label for="Precio">Precio</label>
-            <input type="number" class="form-control" id="Precio" name="Precio" placeholder="Introduce el precio" value="' . htmlspecialchars($row['Precio']) . '">
+            <input type="number" class="form-control" id="Precio" name="Precio" placeholder="Introduce el precio" value="' . htmlspecialchars($rowDetalle['Precio']) . '">
             <span id="error-precio" class="error"></span>
           </div>
         </div>
@@ -200,24 +184,21 @@ if ($facturaId) {
   </div>
 </div>
 ';
-
+          }}
+        } else {
+            echo "No se encontró la boleta con el ID especificado.";
+        }
     } else {
-        echo "No se encontró la boleta con el ID especificado.";
+        echo "ID de boleta no proporcionado.";
     }
-} else {
-    echo "ID de boleta no proporcionado.";
-}
-$conn->close(); // Es buena práctica cerrar la conexión cuando ya no es necesaria
-?>
-
-
-
-
+    $conn->close();
+    ?>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
     <script src="JS/loader.js"></script>
 
+  </div>
 </body>
 </html>

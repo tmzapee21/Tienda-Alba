@@ -105,29 +105,15 @@ while ($row = $stmt->fetch())
         case 'Anulada':
             $colorTextoEstado = 'color: red;';
             break;
-        case 'Rectificado':
+        case 'Rectificada':
             $colorTextoEstado = 'color: orange;';
             break;
-        case 'Creado':
+        case 'Creada':
             $colorTextoEstado = 'color: yellow;';
             break;
-        // Agrega más casos según sea necesario
     }
 
-    // Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
-    $subtotal = $row['Precio'] * $row['Cantidad'];
-    $IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
-    $total = $subtotal + $IVA;
-
-    // Inicia el contenedor de la boleta
-    echo '<div style="position: relative; width: 100%;">';
-
-    // Mostrar la marca de agua si el estado es "Anulada"
-    if ($row['Estado'] == 'Anulada') {
-      echo '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: red; opacity: 0.5; z-index: 1000;">
-              ANULADA
-            </div>';
-    }
+    
 
     echo '<div id="boletas2">
     <div class="container">
@@ -135,22 +121,27 @@ while ($row = $stmt->fetch())
             <a class="btn btn-primary btn-estirado" data-toggle="collapse" href="#facturaCollapse' . $row['ID_Boleta'] . '" role="button" aria-expanded="false" aria-controls="facturaCollapse' . $row['ID_Boleta'] . '">
         <img src="IMG/Colo_a.png" alt="Logo" height="50" class="logo2"> Boleta ' . $row['ID_Boleta'] . ' - Producto: ' . $row['Nombre_Producto'] . ' - <span style="' . $colorTextoEstado . '">' . $row['Estado'] . '</span>
       </a>
-            
-            
             <form action="modi.php" method="POST">
         <input type="hidden" name="ID_Boleta" value="' . htmlspecialchars($row['ID_Boleta']) . '">
         <button type="submit" class="modi">Modificar</button>
     </form>
             <button id="descargar' . $row['ID_Boleta'] . '" class="pdf" >PDF</button>
         </p>
-          
             <div id="facturaCollapse' . $row['ID_Boleta'] . '" class="collapse">
-              <div class="card card-body" id="titulo5">
-                  
-                  <div class="logo-y-titulo">  
+              <div class="card card-body" id="titulo5" style="position: relative;">';
+
+              // Tu código existente para mostrar la marca de agua "ANULADA"
+if ($row['Estado'] == 'Anulada') {
+    echo '<div style="position: absolute; top: 20%; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center;">
+            <span style="font-size: 4em; color: rgba(255, 0, 0, 0.5); transform: rotate(-45deg); z-index: 1000;">
+              ANULADA
+            </span>
+          </div>';
+}
+
+echo '                  <div class="logo-y-titulo">  
                       <img src="IMG/Colo_a.png" alt="Logo" height="80" class="logo">
                       <h2> ORDEN DE COMPRA </h2>
-                      
                   </div>
                   <div class="logo-y-titulo2">
                   <div id="empresa">
@@ -161,19 +152,15 @@ while ($row = $stmt->fetch())
                         <h3 id="empre">EMPRESA: </h3>
                         <p>' . $row['Nombre_Empresa'] . '</p>
                     </div>
-                    
                     <div class="container3">
                     <div class="cp2" >
                       <h3 id="empre4">DE: </h3>
                       <p>' . $_SESSION['username'] . '</p>
                       <p>' . $_SESSION['correo'] . '</p>
                       <p>' . $_SESSION['rut'] . '</p>
-                      
                     </div>
-                  
-                <div class="cp3" >
+                    <div class="cp3" >
                   <div class="text-container">
-
                   <h3 id="empre4">COBRAR A: </h3>
                   <p>' . $row['usuario'] . '</p>
                   <p>' . $row['Correo'] . '</p>
@@ -181,9 +168,7 @@ while ($row = $stmt->fetch())
                   <p>' . $row['Direccion'] . '</p>
                   </div>
                 </div>
-
                 </div>
-                
                 <div class="cp4">
                     <table>
                         <thead>
@@ -198,26 +183,48 @@ while ($row = $stmt->fetch())
                                 <th>Total</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>' . $row['Nombre_Empresa'] . '</td>
-                                <td>' . $row['Nombre_Producto'] . '</td>
-                                <td>' . $row['Descripcion_Producto'] . '</td>
-                                <td>' . $row['Cantidad'] . '</td>
+                        <tbody>';
+
+                        $totalP = 0;
+
+                        // Consulta para obtener los datos de la tabla "detalle_factura"
+                        $detalleSql = "SELECT * FROM detalle_factura WHERE ID_Boleta = :id_boleta";
+                        $detalleStmt = $pdo->prepare($detalleSql);
+                        $detalleStmt->bindParam(':id_boleta', $row['ID_Boleta']);
+                        $detalleStmt->execute();
+                        while ($detalleRow = $detalleStmt->fetch()) {
+                          // Suponiendo que $row['Precio'] y $row['Cantidad'] existen y contienen los datos correctos
+$subtotal = $detalleRow['Precio'] * $detalleRow['Cantidad'];
+$IVA = $subtotal * 0.19; // Suponiendo que el IVA es del 19%
+$total = $subtotal + $IVA;
+
+// Suma el total de este producto al total general (totalP)
+$totalP += $total;
+
+                            echo '<tr>
+                                    <td>' . $row['Nombre_Empresa'] . '</td>
+                                <td>' . $detalleRow['Nombre_Producto'] . '</td>
+                                <td>' . $detalleRow['Descripcion_Producto'] . '</td>
+                                <td>' . $detalleRow['Cantidad'] . '</td>
                                 <td>' . $row['Pago'] . '</td>
                                 <td>' . number_format($subtotal, 0, ',', '.') . ' CLP</td>
                                 <td>' . number_format($IVA, 0, ',', '.') . ' CLP</td>
                                 <td>' . number_format($total, 0, ',', '.') . ' CLP</td>
-                            </tr>
-                        </tbody>
+                                <td>' . number_format($totalP, 0, ',', '.') . ' CLP</td>
+                                  </tr>';
+                        }
+                        // Asegúrate de colocar el totalP fuera del bucle si necesitas mostrar el total general después de listar todos los productos
+echo '<tr>
+<td colspan="8" style="text-align: right;">Total General:</td>
+<td>' . number_format($totalP, 0, ',', '.') . ' CLP</td>
+</tr>
+                            
+
+                  </tbody>
                     </table>
                 </div>
-
-                  
-                  </div>
               </div>
           </div>
-        
       </div>';
 }
 ?>
