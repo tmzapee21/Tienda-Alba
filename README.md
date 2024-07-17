@@ -56,7 +56,8 @@
 
 # Paso 1
 
-- 1.1 Al momento de que su equipo haya iniciado, ya con los software de xaamp ya instalados, mediante el perfil de github del proyecto Tienda-Alba, ejecute click sobre el boton Code<>, en el cual procedera a seleccionar download.zip, donde procedera a descargar el proyecto de nuestra pagina
+- 1.1 Al momento de que su equipo haya iniciado, ya con los software de xaamp ya instalados, mediante el perfil de github del proyecto Tienda-Alba "https://github.com/tmzapee21/Tienda-Alba
+", ejecute click sobre el boton Code<>, en el cual procedera a seleccionar download.zip, donde procedera a descargar el proyecto de nuestra pagina
 
 - 1.2 Debemos dirigirnos a nuestro Disco Local (C) en el cual se debe entrar en el siguiente orden de las carpetas xampp>htdocs
 
