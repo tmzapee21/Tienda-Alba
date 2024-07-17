@@ -52,15 +52,7 @@
 
 ![Logo de MySQL](https://cdn.icon-icons.com/icons2/2415/PNG/512/mysql_original_wordmark_logo_icon_146417.png)
 
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
-# URGENTE!!!
-
-* El proyecto es demasiado pesado ( 1.4 GB ) para subirlo desde git bash , con tal de solucionar este error subimos nuestro proyecto entero en archivo winrar y a un drive con todo el proyecto para descargar si necesita la ultima versión.
-
-* Drive : https://drive.google.com/drive/u/0/folders/1bz2A5fM4kUeqEuiDIfRw4D2HOM5C-zCq
-
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 # Paso 1
 
